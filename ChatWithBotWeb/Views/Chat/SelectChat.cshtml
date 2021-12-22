@@ -1,0 +1,24 @@
+﻿@model List<ViewChat>
+<div class="text-center mt-3">
+    @foreach(var c in Model)
+    {
+        <div class="card">
+           <form id="@c.Id" asp-action="SelectChat" asp-controller="Chat" method="post" >
+               <input type="hidden" asp-for="@c.Id" />
+                <div class="card-body">
+                    <div class="card-title">@c.NameChat</div>
+                    <div class="card-subtitle">Пользователи чата: </div>
+                    @foreach (var u in c.Users)
+                    {
+                        <div class="list-group-item">@u.Name </div>
+                    }
+                    <div class="card-subtitle">Боты: </div>
+                    @foreach (var b in c.Bots)
+                    {
+                        <div class="list-group-item"> @b.NameBot</div>
+                    }
+                </div>
+           </form>
+        </div>
+    }
+</div>
