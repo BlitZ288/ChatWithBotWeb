@@ -15,5 +15,7 @@ namespace ChatWithBotWeb.Models
        public int LogsUserId { get; set; }
        public DateTime StartChat { get; set; }
        public DateTime? StopChat { get; set; }
+       public Chat Chat { get; set; }
+
     }
 }

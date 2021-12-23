@@ -12,14 +12,20 @@ namespace ChatWithBotWeb.Models
     [Serializable]
     public class LogAction
     {
+       public int LogActionId { get; set; }
        private DateTime FixLog { get; set; }
        private string Content { get; set; }
        private string NameUser { get; set; }
+      
         public LogAction(DateTime fixLog, string content,string nameUser)
         {
             FixLog = fixLog;
             Content = content;
             NameUser = nameUser;
+        }
+        public LogAction()
+        {
+
         }
     }
 }

@@ -10,6 +10,7 @@ namespace ChatWithBotWeb.Models
         public int UserId { get; set; }
         public string Name { get; set; }
 
+
         public User(string Name)
         {
             this.Name = Name;

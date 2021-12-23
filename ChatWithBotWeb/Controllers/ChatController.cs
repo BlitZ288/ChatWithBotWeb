@@ -1,7 +1,10 @@
-﻿using ChatWithBotWeb.Models;
+﻿using ChatWithBotWeb.Infrastructure;
+using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
+using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,44 +16,61 @@ namespace ChatWithBotWeb.Controllers
     {
         private IRepositoryUser repositoryUser;
         private IRepositoryChat repositoryChat;
-        public ChatController( IRepositoryUser Usercontext, IRepositoryChat Chatcontext)
+        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext)
         {
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
         }
         public ActionResult Index()
         {
+
             return View();
         }
-      
+
         public ActionResult CreateChat()
         {
             return View("CreateChat");
         }
         public ActionResult SelectChat()
         {
-            var ListChat = repositoryChat.GetAllChat;
-           List <ViewChat> model = new List<ViewChat>();
-           
-            foreach(var chat in ListChat)
+            var ListChat = repositoryChat.GetAllChat.OrderBy(c => c.ChatId);
+            List<ChatViewModel> model = new List<ChatViewModel>();
+
+            foreach (var chat in ListChat)
             {
-                model.Add(new ViewChat() 
-                { 
-                    Id=chat.ChatId,
-                    Bots=chat.ChatBot,
-                    NameChat=chat.Name,
-                    Users=chat.Users
+                model.Add(new ChatViewModel()
+                {
+                    Id = chat.ChatId,
+                    Bots = chat.ChatBot,
+                    NameChat = chat.Name,
+                    Users = chat.Users
                 });
 
             }
             return View("SelectChat", model);
         }
         [HttpPost]
-        public void SelectChat(int id)
+        public ActionResult SelectChat(int IdChat)
         {
-            int a = id;
-            int b = 2; 
+            try
+            {
+                Chat chat = repositoryChat.GetChat(IdChat);
+                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
+                ChatUserViewModel model = new ChatUserViewModel()
+                {
+                    Chat = chat,
+                    UsersNotInclude = ListUsers
+                };
+                SaveChat(chat);
+                return View("Index", model);
+            }
+            catch
+            {
+                return RedirectToAction("SelectChat");
+            }
+
         }
+
         [HttpPost]
         public ActionResult CreateChat(Chat chat)
         {
@@ -65,73 +85,19 @@ namespace ChatWithBotWeb.Controllers
             }
         }
 
-        // GET: ChatController/Details/5
-        public ActionResult Details(int id)
+        public PartialViewResult AddMessage(string content)
         {
-            return View();
+            Message message = new Message(content, new User());
+            return null;
         }
-
-        // GET: ChatController/Create
-        public ActionResult Create()
+        private void SaveChat(Chat chat)
         {
-            return View();
+            HttpContext.Session.SetJson("CurrentChat", chat);
         }
-
-        // POST: ChatController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        private Chat GetChat()
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ChatController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: ChatController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ChatController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ChatController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            Chat chat = HttpContext.Session.GetJson<Chat>("CurrentChat");
+            return chat;
         }
     }
 }

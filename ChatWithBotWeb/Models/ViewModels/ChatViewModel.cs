@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models
 {
-    public class ViewChat
+    public class ChatViewModel
     {
         public int Id { get; set; }
         public string NameChat { get; set; }

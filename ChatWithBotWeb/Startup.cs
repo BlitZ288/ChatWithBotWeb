@@ -1,11 +1,12 @@
 using ChatWithBotWeb.Models.Db;
+using ChatWithBotWeb.Models.Identity;
 using ChatWithBotWeb.Models.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,12 @@ namespace ChatWithBotWeb
             services.AddDbContext<ApplicationDbContext>(option => option.UseNpgsql(
                      Configuration["Data:ChatBotWeb:ConnectionString"]
                 ));
+            services.AddDbContext<AppIdentityDbContex>(option => option.UseNpgsql(
+                    Configuration["Data:ChatBotWebIdentity:ConnectionString"]
+               ));
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppIdentityDbContex>()
+                .AddDefaultTokenProviders();
             services.AddTransient<IRepositoryUser, RepositoryUser >();
             services.AddTransient<IRepositoryChat, ChatRepository >();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -39,6 +46,8 @@ namespace ChatWithBotWeb
                 {
                     option.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
                 });
+            services.AddMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +77,7 @@ namespace ChatWithBotWeb
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            IdentitySeedData.EnsurePopulated(app);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace ChatWithBotWeb.Models.Interface
     public interface IRepositoryChat
     {
         List<Chat> GetAllChat { get; }
-        void AddChat(Chat user);
+        void AddChat(Chat chat);
         Chat GetChat(int indexChat);
         void DeleteChat(Chat chat);
 

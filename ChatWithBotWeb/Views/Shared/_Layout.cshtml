@@ -12,6 +12,11 @@
         
     </header>
     <div class="container">
+        <div class="navbar navbar-invers navbar-dark bg-light" role="navigation">
+            <a class="nav-link " href="#">Chat</a>
+            <a class="nav-link " href=@Url.Action("CreateChat","Chat")>Создать чат </a>
+            <a class="nav-link " href=@Url.Action("SelectChat","Chat")>Список чатов</a>
+        </div>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

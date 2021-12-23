@@ -17,11 +17,11 @@ namespace ChatWithBotWeb.Models
         public int ChatId { get; set; }
         public string Name { get; set; }
 
-        public List<User> Users = new List<User>();
+        public List<User> Users { get; set; } = new List<User>();
       
         public List<Message> ListMessage { get; set; } = new List<Message>();
 
-        public List<LogAction> LogActions = new List<LogAction>();
+        public List<LogAction> LogActions { get; set; } = new List<LogAction>();
 
         public Dictionary<string, LogsUser> ChatLogUsers = new Dictionary<string, LogsUser>();
 

@@ -71,6 +71,15 @@ body {
     flex-direction: column;
     align-items: center;
 }
+.card__Chat{
+    width:40%;
+}
+.item__menu{
+    color:#000000;
+}
+.title__body {
+    padding: 12px
+}
 .footer {
     position: absolute;
     bottom: 0;

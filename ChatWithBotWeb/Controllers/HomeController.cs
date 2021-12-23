@@ -15,15 +15,19 @@ namespace ChatWithBotWeb.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private IRepositoryUser repository;
-        public HomeController(ILogger<HomeController> logger, IRepositoryUser context)
+        private IRepositoryUser conextUser;
+        private IRepositoryChat conextChat;
+        public HomeController(ILogger<HomeController> logger, IRepositoryUser context, IRepositoryChat repositoryChat)
         {
             _logger = logger;
-            repository = context;
+            conextUser = context;
+            conextChat = repositoryChat;
         }
 
         public IActionResult Index()
         {
+            
+          
             return View();
         }
 

@@ -1,4 +1,5 @@
 ﻿using ChatWithBotWeb.Models.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,13 @@ namespace ChatWithBotWeb.Models.Db
         {
             Context = context;
         }
-        public List<Chat> GetAllChat =>Context.Chats.ToList();
+        public List<Chat> GetAllChat
+        {
+            get
+            {
+              return  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).ToList();
+            }
+        }
 
         public void AddChat(Chat chat)
         {
@@ -29,7 +36,9 @@ namespace ChatWithBotWeb.Models.Db
 
         public Chat GetChat(int indexChat)
         {
-            return Context.Chats.FirstOrDefault(c => c.ChatId == indexChat);
+          Chat chat=  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage)
+                                                         .FirstOrDefault(c => c.ChatId == indexChat);
+            return chat;
         }
     }
 }
