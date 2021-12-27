@@ -1,6 +1,8 @@
 ﻿using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Db;
 using ChatWithBotWeb.Models.Interface;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,20 +16,19 @@ namespace ChatWithBotWeb.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private IRepositoryUser conextUser;
         private IRepositoryChat conextChat;
-        public HomeController(ILogger<HomeController> logger, IRepositoryUser context, IRepositoryChat repositoryChat)
+        
+        public HomeController( IRepositoryUser context, IRepositoryChat repositoryChat,UserManager<User> userManager)
         {
-            _logger = logger;
             conextUser = context;
             conextChat = repositoryChat;
+          
         }
-
+        [Authorize]
         public IActionResult Index()
         {
-            
-          
+
             return View();
         }
 

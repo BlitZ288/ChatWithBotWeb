@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Db
 {
-    public class AppIdentityDbContex:IdentityDbContext<IdentityUser>
+    public class AppIdentityDbContex:IdentityDbContext<User>
     {
         public AppIdentityDbContex (DbContextOptions <AppIdentityDbContex> options):base(options)
         {

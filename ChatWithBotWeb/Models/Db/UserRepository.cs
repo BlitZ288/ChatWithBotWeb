@@ -21,9 +21,9 @@ namespace ChatWithBotWeb.Models.Db
             Context.Users.Add(user);
             Context.SaveChanges();
         }
-        public User GetUser(int indexUser)
+        public User GetUser(string indexUser)
         {
-            return Context.Users.FirstOrDefault(c => c.UserId == indexUser);
+            return Context.Users.FirstOrDefault(c => c.Id == indexUser);
         }
         public void DeleteUser(User user)
         {

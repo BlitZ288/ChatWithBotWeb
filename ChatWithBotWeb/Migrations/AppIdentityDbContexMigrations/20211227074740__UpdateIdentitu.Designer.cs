@@ -3,15 +3,17 @@ using System;
 using ChatWithBotWeb.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatWithBotWeb.Migrations.AppIdentityDbContexMigrations
 {
     [DbContext(typeof(AppIdentityDbContex))]
-    partial class AppIdentityDbContexModelSnapshot : ModelSnapshot
+    [Migration("20211227074740__UpdateIdentitu")]
+    partial class _UpdateIdentitu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,6 +74,9 @@ namespace ChatWithBotWeb.Migrations.AppIdentityDbContexMigrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)

@@ -1,27 +1,34 @@
 ﻿@model List<ChatViewModel>
 <div class="text-center mt-3">
-    @foreach(var c in Model)
+    @if (Model.Any())
     {
-        <div class="card card__Chat">
-            <div class="p-1" >
-                <form id="@c.Id" asp-action="SelectChat" asp-controller="Chat" method="post">
-                    <input type="hidden" asp-for="@c.Id" name="IdChat"/>
-                    <div class="card-body">
-                        <div class="card-title">@c.NameChat</div>
-                        <div class="card-subtitle title__body">Пользователи чата: </div>
-                        @foreach (var u in c.Users)
-                        {
-                            <div class="list-group-item">@u.Name </div>
-                        }
-                        <div class="card-subtitle title__body">Боты: </div>
-                        @foreach (var b in c.Bots)
-                        {
-                            <div class="list-group-item"> @b.NameBot</div>
-                        }
-                    </div>
-                    <button class="btn btn-primary" type="submit">Выбрать</button>
-                </form>
+        @foreach (var c in Model)
+        {
+            <div class="card card__Chat">
+                <div class="p-1" >
+                    <form id="@c.Id" asp-action="SelectChat" asp-controller="Chat" method="post">
+                        <input type="hidden" asp-for="@c.Id" name="IdChat"/>
+                        <div class="card-body">
+                            <div class="card-title">@c.NameChat</div>
+                            <div class="card-subtitle title__body">Пользователи чата: </div>
+                            @foreach (var u in c.Users)
+                            {
+                                <div class="list-group-item">@u.Name </div>
+                            }
+                            <div class="card-subtitle title__body">Боты: </div>
+                            @foreach (var b in c.Bots)
+                            {
+                                <div class="list-group-item"> @b.NameBot</div>
+                            }
+                        </div>
+                        <button class="btn btn-primary" type="submit">Выбрать</button>
+                    </form>
+                </div>
             </div>
-        </div>
+        }
+    }
+    else { 
+        
+            <h2 class="text-center">Чатов пока нет </h2>    
     }
 </div>

@@ -3,6 +3,7 @@ using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
 using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using System;
@@ -16,10 +17,15 @@ namespace ChatWithBotWeb.Controllers
     {
         private IRepositoryUser repositoryUser;
         private IRepositoryChat repositoryChat;
-        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext)
+        private UserManager<User> _userManager;
+
+
+        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext, UserManager<User> userManager)
         {
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
+            _userManager = userManager; 
+
         }
         public ActionResult Index()
         {
@@ -47,40 +53,56 @@ namespace ChatWithBotWeb.Controllers
                 });
 
             }
+            
             return View("SelectChat", model);
         }
         [HttpPost]
-        public ActionResult SelectChat(int IdChat)
+        public async Task<ActionResult> SelectChatAsync(int IdChat)
         {
             try
             {
                 Chat chat = repositoryChat.GetChat(IdChat);
+                User user = await _userManager.GetUserAsync(User);
+                User user1 = repositoryUser.GetUser(user.Id);
+                if (!chat.Users.Contains(user1))
+                {
+                    chat.Users.Add(user1);
+                    repositoryChat.UpdateChat(chat);
+                }
                 var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
                 ChatUserViewModel model = new ChatUserViewModel()
                 {
                     Chat = chat,
                     UsersNotInclude = ListUsers
                 };
-                SaveChat(chat);
+                HttpContext.Session.SetJson("CurrentChat", chat);
                 return View("Index", model);
             }
             catch
             {
                 return RedirectToAction("SelectChat");
             }
-
         }
 
         [HttpPost]
-        public ActionResult CreateChat(Chat chat)
-        {
+        public async Task<ActionResult> CreateChatAsync(Chat chat)
+        {/*убрать userManger все мнужно через один context*/
             try
             {
+                User t = await _userManager.GetUserAsync(User);
+                chat.Users.Add(t);
                 repositoryChat.AddChat(chat);
-                return RedirectToAction(nameof(Index));
+                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
+                ChatUserViewModel model = new ChatUserViewModel()
+                {
+                    Chat = chat,
+                    UsersNotInclude = ListUsers
+                };
+                return View("Index", model);
             }
-            catch
+            catch(Exception e )
             {
+
                 return View();
             }
         }
@@ -90,14 +112,25 @@ namespace ChatWithBotWeb.Controllers
             Message message = new Message(content, new User());
             return null;
         }
-        private void SaveChat(Chat chat)
+        
+        [HttpPost]
+        public ActionResult AddUserInChat(string UserId)
         {
-            HttpContext.Session.SetJson("CurrentChat", chat);
-        }
-        private Chat GetChat()
-        {
+            User user = repositoryUser.GetUser(UserId);
             Chat chat = HttpContext.Session.GetJson<Chat>("CurrentChat");
-            return chat;
+            chat.Users.Add(user);
+            repositoryChat.UpdateChat(chat);
+            return RedirectToAction("SelectChatAsync", chat.ChatId);
         }
+        [HttpPost]
+        public ActionResult DeleteUserInChat(string UserId)
+        {
+            User user = repositoryUser.GetUser(UserId);
+            Chat chat = HttpContext.Session.GetJson<Chat>("CurrentChat");
+            chat.Users.Remove(user);
+            repositoryChat.UpdateChat(chat);
+            return RedirectToAction("SelectChatAsync", chat.ChatId);
+        }
+
     }
 }

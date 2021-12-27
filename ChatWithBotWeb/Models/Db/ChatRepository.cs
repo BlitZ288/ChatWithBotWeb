@@ -40,5 +40,20 @@ namespace ChatWithBotWeb.Models.Db
                                                          .FirstOrDefault(c => c.ChatId == indexChat);
             return chat;
         }
+        public void UpdateChat(Chat chat)
+        {
+            Chat dbEntry = Context.Chats.FirstOrDefault(c => c.ChatId == chat.ChatId);
+            //Context.Entry(chat.Users).State = EntityState.Detached;
+            if (dbEntry != null)
+            {
+                dbEntry.Users = chat.Users;
+                dbEntry.ChatLogUsers = chat.ChatLogUsers;
+                dbEntry.ChatBot = chat.ChatBot;
+                dbEntry.ListMessage = chat.ListMessage;
+                dbEntry.LogActions = chat.LogActions;
+                dbEntry.Name = chat.Name;
+            }
+            Context.SaveChanges();
+        }
     }
 }

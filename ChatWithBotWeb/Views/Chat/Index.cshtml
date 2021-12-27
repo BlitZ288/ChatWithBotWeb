@@ -1,30 +1,46 @@
 ﻿@model ChatUserViewModel
 <div class="text-center">
     <div class="container conteiner__Chat">
-        <div class="col col_user">
-            <div class="user_withChat">
-                Пользователи в чате
-                <ul>
-                    @foreach (var user in Model.Chat.Users)
-                    {
-                        <li class="item__user">@user.Name</li>
-                    }
-                </ul>
+        <div class="row">
+            <div class="col col_user">
+                <div class="user_withChat">
+                    Пользователи в чате
+                    <ul class="list-group list-group-flush">
+                        @foreach (var user in Model.Chat.Users)
+                        {
+                            <li class=" list-group-item item__user">@user.Name 
+                                <form asp-action="DeleteUserInChat" method="post">
+                                    <input type="hidden" name="UserId" value="@user.Id"/>
+                                    <button type="submit" class="btn btn-outline-danger">Удалить из чата </button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="user_outChat">
+                    Все пользователи
+                    <ul class="list-group list-group-flush">
+                        @foreach (var user in Model.UsersNotInclude)
+                        {
+                            <li class=" list-group-item item__user">@user.Name
+                                <form asp-action="AddUserInChat" method="post">
+                                    <input type="hidden" name="UserId" value="@user.Id"/>
+                                    <button type="submit" class="btn btn-outline-primary">Добавить в чат </button>
+                                </form>
+                                 <form asp-action="DeleteUserInChat" method="post">
+                                    <input type="hidden" name="UserId" value="@user.Id"/>
+                                    <button type="submit" class="btn btn-outline-danger">Удалить из чата </button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                #Тут вывод двух списков с пользователеми чата и общими которых можео пригласить по + и -
             </div>
-            <div class="user_outChat">
-                Все пользователи
-                <ul>
-                    @foreach (var user in Model.UsersNotInclude)
-                    {
-                        <li class="item__user">@user.Name</li>
-                    }
-                </ul>
+            <div class="col col__Chat">
+                #тут будет окно чата в виде частичного представление , Суть такая идет запрос далее он записываеться в общий массив и выводиться в список все сообщения
+                @Html.Partial("_WindowChat", Model.Chat.ListMessage)
             </div>
-            #Тут вывод двух списков с пользователеми чата и общими которых можео пригласить по + и -
-        </div>
-        <div class="col col__Chat">
-            #тут будет окно чата в виде частичного представление , Суть такая идет запрос далее он записываеться в общий массив и выводиться в список все сообщения 
-           @Html.Partial("_WindowChat",Model.Chat.ListMessage) 
         </div>
     </div>
 </div>

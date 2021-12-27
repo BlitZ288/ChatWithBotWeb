@@ -9,7 +9,7 @@ namespace ChatWithBotWeb.Models.Interface
     {
         List<User> GetAllUsers { get; }
         void AddUser(User user);
-        User GetUser(int indexUser);
+        User GetUser(string indexUser);
         void DeleteUser(User user);
     }
 }

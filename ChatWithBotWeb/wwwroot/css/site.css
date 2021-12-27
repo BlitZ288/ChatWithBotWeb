@@ -80,6 +80,13 @@ body {
 .title__body {
     padding: 12px
 }
+.container_mes{
+    
+    height:250px;
+    overflow:hidden;
+    border:1px solid #808080;
+    margin-bottom:15px;
+}
 .footer {
     position: absolute;
     bottom: 0;

@@ -1,19 +1,25 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models
 {
-    public class User
+    public class User:IdentityUser
     {
-        public int UserId { get; set; }
         public string Name { get; set; }
+        public string Password { get; set; }
 
 
-        public User(string Name)
+        public User(string name)
         {
-            this.Name = Name;
+           Name = name;
+        }
+        public User(string name,string password)
+        {
+            Name = name;
+            Password = password;
         }
         public User() { }
         /// <summary>
