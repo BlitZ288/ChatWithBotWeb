@@ -9,5 +9,6 @@ namespace ChatWithBotWeb.Models.ViewModels
     {
         public Chat Chat { get; set; }
         public List<User> UsersNotInclude { get; set; }
+        public List<Message> HistoryChat{ get; set; }
     }
 }

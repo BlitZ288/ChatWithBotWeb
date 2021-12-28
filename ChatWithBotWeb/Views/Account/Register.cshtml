@@ -1,5 +1,13 @@
 ﻿@model LoginModel
-
+@{
+    Layout = null;
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
 <div class="text-danger" asp-validation-summary="All"></div>
 <form asp-action="Register" asp-controller="Account" method="post">
     <input type="hidden" asp-for="ReturnUrl" />

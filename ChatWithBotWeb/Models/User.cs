@@ -10,7 +10,7 @@ namespace ChatWithBotWeb.Models
     {
         public string Name { get; set; }
         public string Password { get; set; }
-
+        public List<LogsUser> LogsUsers { get; set; } = new List<LogsUser>();
 
         public User(string name)
         {
@@ -27,46 +27,38 @@ namespace ChatWithBotWeb.Models
         /// </summary>
         /// <param name="chat"></param>
         /// <param name="NameInvite"></param>
-        public void SignUser(Chat chat, User user)
-        {
-            if (!chat.Users.Contains(user))
-            {
-                if (!chat.ChatLogUsers.ContainsKey(user.Name))
-                {
-                    chat.ChatLogUsers.Add(user.Name, new LogsUser() { StartChat = DateTime.Now, StopChat = null });
-                }
-                else
-                {
-                    chat.ChatLogUsers[user.Name].StopChat = null;
-                }
-                chat.Users.Add(user);
-            }
-            else
-            {
-                throw new ArgumentException("Пользователь уже в чате ");
-            }
-
-        }
+        //public void SignUser(Chat chat, User user)
+        //{
+        //    if (!chat.ChatLogUsers.ContainsKey(user))
+        //    {
+        //      chat.ChatLogUsers.Add(user, new LogsUser() { StartChat = DateTime.Now, StopChat = null });
+        //    }
+        //    else
+        //    {
+        //      chat.ChatLogUsers[user].StopChat = null;
+        //    }
+        //    chat.Users.Add(user);
+        //}
         /// <summary>
         /// Удалить из чата 
         /// </summary>
         /// <param name="chat"></param>
         /// <param name="user"></param>
         /// <param name="NameInvite"></param>
-        public void LogutUser(Chat chat, User user, string nameDelete)
-        {
-            var CickUer = chat.Users.Where(u => u.Name == nameDelete).FirstOrDefault();
-            if (CickUer != null)
-            {
-                chat.ChatLogUsers[CickUer.Name].StopChat = DateTime.Now;
-                chat.Users.Remove(CickUer);
-            }
-            else
-            {
-                throw new ArgumentNullException("Пользователя с таким именем нет");
-            }
+        //public void LogutUser(Chat chat, User user, string nameDelete)
+        //{
+        //    var CickUer = chat.Users.Where(u => u.Name == nameDelete).FirstOrDefault();
+        //    if (CickUer != null)
+        //    {
+        //        chat.ChatLogUsers[CickUer].StopChat = DateTime.Now;
+        //        chat.Users.Remove(CickUer);
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentNullException("Пользователя с таким именем нет");
+        //    }
 
-        }
+        //}
         /// <summary>
         /// Удалить сообщение 
         /// </summary>
@@ -91,20 +83,20 @@ namespace ChatWithBotWeb.Models
         /// </summary>
         /// <param name="chat"></param>
         /// <param name="user"></param>
-        public bool DelChat(Chat chat, User user, List<Chat> chats)
-        {
-            if (chat.Users.Contains(user))
-            {
-                chat.ChatLogUsers[user.Name].StopChat = DateTime.Now;
-                chat.Users.Remove(user);
-                chats.Remove(chat);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //public bool DelChat(Chat chat, User user, List<Chat> chats)
+        //{
+        //    if (chat.Users.Contains(user))
+        //    {
+        //        chat.ChatLogUsers[user].StopChat = DateTime.Now;
+        //        chat.Users.Remove(user);
+        //        chats.Remove(chat);
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
         public override bool Equals(object obj)
         {
             return (obj == null) || (obj.GetType() != typeof(User))
@@ -114,7 +106,7 @@ namespace ChatWithBotWeb.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name);
+            return HashCode.Combine(Id);
         }
     }
 }

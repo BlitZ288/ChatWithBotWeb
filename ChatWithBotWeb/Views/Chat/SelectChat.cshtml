@@ -4,26 +4,33 @@
     {
         @foreach (var c in Model)
         {
-            <div class="card card__Chat">
-                <div class="p-1" >
-                    <form id="@c.Id" asp-action="SelectChat" asp-controller="Chat" method="post">
-                        <input type="hidden" asp-for="@c.Id" name="IdChat"/>
-                        <div class="card-body">
-                            <div class="card-title">@c.NameChat</div>
-                            <div class="card-subtitle title__body">Пользователи чата: </div>
+            <div class="list-group card__Chat">
+                <form id="@c.Id" asp-action="SelectChat" asp-controller="Chat" method="post">
+                    <input type="hidden" asp-for="@c.Id" name="IdChat" />
+                    <button class="list-group-item list-group-item-action flex-column align-items-start" type="submit">
+
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@c.NameChat</h5>
+                        </div>
+                        <p class="mb-1">
+                            Пользователи чата:
                             @foreach (var u in c.Users)
                             {
-                                <div class="list-group-item">@u.Name </div>
+                                @u.Name 
                             }
-                            <div class="card-subtitle title__body">Боты: </div>
+                            <br />
+                           
+                        </p>
+                        <p class="mb-1">
+                            Боты:
                             @foreach (var b in c.Bots)
                             {
-                                <div class="list-group-item"> @b.NameBot</div>
+                                @b.NameBot
                             }
-                        </div>
-                        <button class="btn btn-primary" type="submit">Выбрать</button>
-                    </form>
-                </div>
+                        </p>
+                    </button>
+
+                </form>
             </div>
         }
     }

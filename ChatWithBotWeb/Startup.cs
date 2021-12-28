@@ -37,6 +37,7 @@ namespace ChatWithBotWeb
                 .AddDefaultTokenProviders();
             services.AddTransient<IRepositoryUser, RepositoryUser >();
             services.AddTransient<IRepositoryChat, ChatRepository >();
+            services.AddTransient<IRepositoryLogUser, LogUserRepository >();
            /// services.AddScoped<User>(sp=> SessionCart.GetCart(sp));
            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

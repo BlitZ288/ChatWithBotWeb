@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatWithBotWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211227074143__UpdateAll")]
-    partial class _UpdateAll
+    [Migration("20211228123647_UpdateLogUserAddColumn2")]
+    partial class UpdateLogUserAddColumn2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -69,9 +69,14 @@ namespace ChatWithBotWeb.Migrations
                     b.Property<DateTime?>("StopChat")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("LogsUserId");
 
                     b.HasIndex("ChatId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("LogsUsers");
                 });
@@ -157,9 +162,6 @@ namespace ChatWithBotWeb.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
@@ -180,10 +182,16 @@ namespace ChatWithBotWeb.Migrations
             modelBuilder.Entity("ChatWithBotWeb.Models.LogsUser", b =>
                 {
                     b.HasOne("ChatWithBotWeb.Models.Chat", "Chat")
-                        .WithMany()
+                        .WithMany("ChatLogUsers")
                         .HasForeignKey("ChatId");
 
+                    b.HasOne("ChatWithBotWeb.Models.User", "User")
+                        .WithMany("LogsUsers")
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Chat");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ChatWithBotWeb.Models.Message", b =>
@@ -210,11 +218,18 @@ namespace ChatWithBotWeb.Migrations
 
             modelBuilder.Entity("ChatWithBotWeb.Models.Chat", b =>
                 {
+                    b.Navigation("ChatLogUsers");
+
                     b.Navigation("ListMessage");
 
                     b.Navigation("LogActions");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ChatWithBotWeb.Models.User", b =>
+                {
+                    b.Navigation("LogsUsers");
                 });
 #pragma warning restore 612, 618
         }

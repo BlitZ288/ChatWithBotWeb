@@ -11,6 +11,8 @@ namespace ChatWithBotWeb.Models.Interface
         void AddChat(Chat chat);
         Chat GetChat(int indexChat);
         void DeleteChat(Chat chat);
+        Chat DeleteUserChat (Chat chat, User user);
+        Chat  AddUserChat(Chat chat, User user);
         void UpdateChat (Chat chat);
 
     }

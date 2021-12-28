@@ -72,7 +72,7 @@ body {
     align-items: center;
 }
 .card__Chat{
-    width:40%;
+    padding-bottom:25px;
 }
 .item__menu{
     color:#000000;
@@ -80,12 +80,20 @@ body {
 .title__body {
     padding: 12px
 }
-.container_mes{
-    
-    height:250px;
-    overflow:hidden;
-    border:1px solid #808080;
-    margin-bottom:15px;
+.btn__user {
+    padding:5px;
+    font-size:15px;
+    margin-bottom:10px;
+}
+.col_user {
+    display: flex;
+    flex-direction: row;
+}
+.container_mes {
+    height: 250px;
+    overflow: hidden;
+    border: 1px solid #808080;
+    margin-bottom: 15px;
 }
 .footer {
     position: absolute;

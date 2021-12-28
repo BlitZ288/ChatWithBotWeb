@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatWithBotWeb.Migrations
 {
-    public partial class _UpdateAll : Migration
+    public partial class UpdateLogUserAddColumn2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,32 +41,10 @@ namespace ChatWithBotWeb.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LogsUsers",
-                columns: table => new
-                {
-                    LogsUserId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    StartChat = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    StopChat = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChatId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LogsUsers", x => x.LogsUserId);
-                    table.ForeignKey(
-                        name: "FK_LogsUsers_Chats_ChatId",
-                        column: x => x.ChatId,
-                        principalTable: "Chats",
-                        principalColumn: "ChatId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
                     ChatId = table.Column<int>(type: "integer", nullable: true),
@@ -93,6 +71,34 @@ namespace ChatWithBotWeb.Migrations
                         column: x => x.ChatId,
                         principalTable: "Chats",
                         principalColumn: "ChatId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LogsUsers",
+                columns: table => new
+                {
+                    LogsUserId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StartChat = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StopChat = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChatId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogsUsers", x => x.LogsUserId);
+                    table.ForeignKey(
+                        name: "FK_LogsUsers_Chats_ChatId",
+                        column: x => x.ChatId,
+                        principalTable: "Chats",
+                        principalColumn: "ChatId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LogsUsers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -133,6 +139,11 @@ namespace ChatWithBotWeb.Migrations
                 name: "IX_LogsUsers_ChatId",
                 table: "LogsUsers",
                 column: "ChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogsUsers_UserId",
+                table: "LogsUsers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",

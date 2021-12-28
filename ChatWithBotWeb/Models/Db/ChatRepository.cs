@@ -18,7 +18,7 @@ namespace ChatWithBotWeb.Models.Db
         {
             get
             {
-              return  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).ToList();
+              return  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).Include(c=>c.ChatLogUsers).Include(c=>c.LogActions).ToList();
             }
         }
 
@@ -37,22 +37,31 @@ namespace ChatWithBotWeb.Models.Db
         public Chat GetChat(int indexChat)
         {
           Chat chat=  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage)
+                                                         .Include(c => c.ChatLogUsers)
                                                          .FirstOrDefault(c => c.ChatId == indexChat);
             return chat;
         }
+        public Chat DeleteUserChat(Chat chat, User user)
+        {
+            Chat dbEntry = Context.Chats.Include(c => c.Users).Include(c => c.ListMessage)
+                                                              .Include(c => c.ChatLogUsers)
+                                                              .FirstOrDefault(c => c.ChatId == chat.ChatId);            
+            dbEntry.Users.Remove(user);
+            Context.SaveChanges();
+            return dbEntry;
+
+        }
+        public Chat AddUserChat(Chat chat , User user)
+        {
+            Chat dbEntry = Context.Chats.Include(c => c.Users).Include(c => c.ListMessage)
+                                                              .Include(c => c.ChatLogUsers)
+                                                               .FirstOrDefault(c => c.ChatId == chat.ChatId);
+            dbEntry.Users.Add(user);
+            Context.SaveChanges();
+            return dbEntry;
+        }
         public void UpdateChat(Chat chat)
         {
-            Chat dbEntry = Context.Chats.FirstOrDefault(c => c.ChatId == chat.ChatId);
-            //Context.Entry(chat.Users).State = EntityState.Detached;
-            if (dbEntry != null)
-            {
-                dbEntry.Users = chat.Users;
-                dbEntry.ChatLogUsers = chat.ChatLogUsers;
-                dbEntry.ChatBot = chat.ChatBot;
-                dbEntry.ListMessage = chat.ListMessage;
-                dbEntry.LogActions = chat.LogActions;
-                dbEntry.Name = chat.Name;
-            }
             Context.SaveChanges();
         }
     }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Controllers
@@ -17,14 +18,15 @@ namespace ChatWithBotWeb.Controllers
     {
         private IRepositoryUser repositoryUser;
         private IRepositoryChat repositoryChat;
-        private UserManager<User> _userManager;
+        private IRepositoryLogUser repositoryLogUser;
 
 
-        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext, UserManager<User> userManager)
+
+        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext, IRepositoryLogUser LogUsercontext)
         {
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
-            _userManager = userManager; 
+            repositoryLogUser = LogUsercontext;
 
         }
         public ActionResult Index()
@@ -37,11 +39,13 @@ namespace ChatWithBotWeb.Controllers
         {
             return View("CreateChat");
         }
-        public ActionResult SelectChat()
+       
+        public ActionResult ShowCard()
         {
             var ListChat = repositoryChat.GetAllChat.OrderBy(c => c.ChatId);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             List<ChatViewModel> model = new List<ChatViewModel>();
-
+            ViewData["test"] = $"Текущий пользователь {user.Name}";
             foreach (var chat in ListChat)
             {
                 model.Add(new ChatViewModel()
@@ -57,80 +61,146 @@ namespace ChatWithBotWeb.Controllers
             return View("SelectChat", model);
         }
         [HttpPost]
-        public async Task<ActionResult> SelectChatAsync(int IdChat)
+        public ActionResult SelectChat(int IdChat)
         {
             try
             {
                 Chat chat = repositoryChat.GetChat(IdChat);
-                User user = await _userManager.GetUserAsync(User);
-                User user1 = repositoryUser.GetUser(user.Id);
-                if (!chat.Users.Contains(user1))
+                var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (!chat.Users.Contains(user))
                 {
-                    chat.Users.Add(user1);
+                    chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User=user });
+                    chat.Users.Add(user);
                     repositoryChat.UpdateChat(chat);
                 }
-                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
+                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList(); //////Подумать 
                 ChatUserViewModel model = new ChatUserViewModel()
                 {
                     Chat = chat,
-                    UsersNotInclude = ListUsers
+                    UsersNotInclude = ListUsers,
+                    HistoryChat = GetHistoryChat(chat, user)
                 };
-                HttpContext.Session.SetJson("CurrentChat", chat);
                 return View("Index", model);
             }
             catch
             {
-                return RedirectToAction("SelectChat");
+                return RedirectToAction("ShowCard");
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateChatAsync(Chat chat)
-        {/*убрать userManger все мнужно через один context*/
+        public ActionResult CreateChat(Chat chat)
+        {
             try
             {
-                User t = await _userManager.GetUserAsync(User);
-                chat.Users.Add(t);
+                var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
+                chat.Users.Add(user);
                 repositoryChat.AddChat(chat);
-                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
+                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();////
                 ChatUserViewModel model = new ChatUserViewModel()
                 {
                     Chat = chat,
-                    UsersNotInclude = ListUsers
+                    UsersNotInclude = ListUsers,
+                    HistoryChat = GetHistoryChat(chat, user)
                 };
                 return View("Index", model);
             }
-            catch(Exception e )
+            catch 
             {
-
                 return View();
             }
         }
 
-        public PartialViewResult AddMessage(string content)
+        public ActionResult AddMessage(string content,int chatId)
         {
-            Message message = new Message(content, new User());
-            return null;
+            Chat chat = repositoryChat.GetChat(chatId);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (chat.Users.Contains(user))
+            {
+                Message message = new Message(content, user);
+                chat.ListMessage.Add(message);
+                //var listMesseg = chat.GetHistoryChat(chat, user);
+                repositoryChat.UpdateChat(chat);
+                return SelectChat(chat.ChatId);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Вы не являетесь участником чата");
+                return null;
+            }
+
         }
         
         [HttpPost]
-        public ActionResult AddUserInChat(string UserId)
+        public ActionResult AddUserInChat(string UserId , int ChatId)
         {
             User user = repositoryUser.GetUser(UserId);
-            Chat chat = HttpContext.Session.GetJson<Chat>("CurrentChat");
+            Chat chat = repositoryChat.GetChat(ChatId);
+            LogsUser logsUser = repositoryLogUser.GetLog(user,chat);
+            if (logsUser==null)
+            {
+                LogsUser logs = new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user };
+                chat.ChatLogUsers.Add(logs);
+            }
+            else
+            {
+                chat.ChatLogUsers.ElementAt(logsUser.LogsUserId).StopChat = null;
+            }
             chat.Users.Add(user);
             repositoryChat.UpdateChat(chat);
-            return RedirectToAction("SelectChatAsync", chat.ChatId);
+            var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
+            ChatUserViewModel model = new ChatUserViewModel()
+            {
+                Chat = chat,
+                UsersNotInclude = ListUsers,
+                HistoryChat = GetHistoryChat(chat, user)
+
+            };
+            return View("Index", model);
         }
         [HttpPost]
-        public ActionResult DeleteUserInChat(string UserId)
+        public ActionResult DeleteUserInChat(string UserId, int ChatId)
         {
             User user = repositoryUser.GetUser(UserId);
-            Chat chat = HttpContext.Session.GetJson<Chat>("CurrentChat");
+            Chat chat = repositoryChat.GetChat(ChatId);
             chat.Users.Remove(user);
             repositoryChat.UpdateChat(chat);
-            return RedirectToAction("SelectChatAsync", chat.ChatId);
+            var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();///Подумать 
+            ChatUserViewModel model = new ChatUserViewModel()
+            {
+                Chat = chat,
+                UsersNotInclude = ListUsers,
+                HistoryChat = GetHistoryChat(chat, user)
+            };
+            return View("Index", model);
         }
 
+        private List<Message> GetHistoryChat(Chat chat, User user)
+        {
+            List<Message> result = new List<Message>();
+            var logUser = repositoryLogUser.GetLog(user, chat);
+            try
+            {
+                if (logUser != null)
+                {
+                    var mes = chat.ListMessage.Where(m => logUser.StartChat <= m.dateTime);
+                    if (logUser.StopChat != null)
+                    {
+                        mes = chat.ListMessage.Where(m => m.dateTime < logUser.StopChat);
+                    }
+                    if (mes.Any())
+                    {
+
+                        return mes.ToList();
+                    }
+                }
+            }
+            catch
+            {
+                return result;
+            }
+            return result;
+        }
     }
 }
