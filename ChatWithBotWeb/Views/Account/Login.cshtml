@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <div class="text-danger" asp-validation-summary="All"></div>
-<form asp-action="Login" asp-controller="Account" method="post" asp-route-returnUrl="@Model.ReturnUrl">
+<form class="p-4" asp-action="Login" asp-controller="Account" method="post" asp-route-returnUrl="@Model.ReturnUrl">
     <input type="hidden" asp-for="ReturnUrl" />
     <div class="form-group">
         <label asp-for="Name"></label>

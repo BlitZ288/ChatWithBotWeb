@@ -89,11 +89,41 @@ body {
     display: flex;
     flex-direction: row;
 }
-.container_mes {
-    height: 250px;
-    overflow: hidden;
+.message_box{
+    display:flex;
+    flex-direction:column;
+    max-width:100%
+}
+
+.item_mes {
+    border-radius: 40px;
+    border: 1px solid #808080;
+    color: #000000;
+    padding: .5rem .5rem .375rem .625rem;
+    line-height: 1.3125;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+.name_user {
+    font-size: 14px;
+    font-weight: bolder;
+    padding-bottom: 10px;
+    text-align:start;
+    padding-left:15px;
+}
+
+.date_mes{
+    text-align:end;
+    padding-right:15px;
+}
+.content__mes {
+    height: 75%;
     border: 1px solid #808080;
     margin-bottom: 15px;
+    overflow: auto;
+    text-align: start;
+    padding-left: 15px;
 }
 .footer {
     position: absolute;

@@ -27,7 +27,6 @@ namespace ChatWithBotWeb.Controllers
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
             repositoryLogUser = LogUsercontext;
-
         }
         public ActionResult Index()
         {
@@ -114,6 +113,7 @@ namespace ChatWithBotWeb.Controllers
 
         public ActionResult AddMessage(string content,int chatId)
         {
+           
             Chat chat = repositoryChat.GetChat(chatId);
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (chat.Users.Contains(user))

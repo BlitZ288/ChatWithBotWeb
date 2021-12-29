@@ -46,10 +46,22 @@
                         @foreach (var mes in Model.HistoryChat)
                         {
                             <div class="item_mes">
-                                @mes.MessageId
-                                <span class="name_user">@mes.User.Name</span>
-                                @mes.dateTime
-                                @mes.Content
+                                <span class="name_user">
+                                    @{ if (mes.User != null)
+                                        {
+                                            @mes.User.Name;
+                                        }
+                                        else
+                                        {
+                                            @mes.NameBot;
+                                        }
+                                    }
+                                </span>
+                                <p class="content__mes">
+                                    @mes.Content
+                                </p>
+                                <span class="date_mes">  @mes.dateTime.ToString("HH:mm")</span>
+                              
                             </div>
                         }
                     </div>

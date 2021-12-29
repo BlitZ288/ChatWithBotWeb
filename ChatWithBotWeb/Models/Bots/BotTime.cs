@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatWithBotWeb.Models.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Bots
 {
-    public class BotTime
+    public class BotTime : IBot
     {
         public string NameBot
         {
@@ -24,15 +25,18 @@ namespace ChatWithBotWeb.Models.Bots
         {
             try
             {
-                command = command.Replace("/", "");
-                if (command.Equals("current"))
+                if (command.Equals("ВРЕМЯ"))
                 {
                     return DateTime.Now.ToString("HH:mm");
                 }
                 else
                 {
-                    return DateTime.Now.AddMinutes(Convert.ToDouble(command)).ToString("HH:mm");
+                    return "";
                 }
+                //if(command.Equals("ЧЕРЕЗ-"))
+                //{
+                //    return DateTime.Now.AddMinutes(Convert.ToDouble(command)).ToString("HH:mm");
+                //}
             }
             catch
             {
@@ -44,7 +48,7 @@ namespace ChatWithBotWeb.Models.Bots
         {
             StringBuilder command = new StringBuilder("");
             command.Append("/current-Узнать текущие время");
-            command.Append("\n" + "/Через time");
+           // command.Append("\n" + "/Через time");
             return command;
         }
     }

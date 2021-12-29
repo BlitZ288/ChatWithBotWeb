@@ -1,6 +1,7 @@
 using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Db;
 using ChatWithBotWeb.Models.Interface;
+using ChatWithBotWeb.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,9 @@ namespace ChatWithBotWeb
             services.AddTransient<IRepositoryUser, RepositoryUser >();
             services.AddTransient<IRepositoryChat, ChatRepository >();
             services.AddTransient<IRepositoryLogUser, LogUserRepository >();
+            services.AddTransient<IRepositoryMessage, MessageRepository>();
+            services.AddTransient<IRepositoryBot, BotsRepository>();
+         
            /// services.AddScoped<User>(sp=> SessionCart.GetCart(sp));
            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
