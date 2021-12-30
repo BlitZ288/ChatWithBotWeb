@@ -21,6 +21,7 @@ namespace ChatWithBotWeb.Models.Bots
             }
 
         }
+
         private readonly Dictionary<string, string> ListAnecdot = new Dictionary<string, string>() {
             {"ГРУСТНО","Объявление: Продам квартиру в Москве или меняю на посёлок городского типа в Курганской области."},
             {"СКУЧНО", "Eсли вы видитe пьющeгo в oдинoчку чeлoвeкa — нe спeшитe с вывoдaми, вoзмoжнo этo — кoрпoрaтив Сaмoзaнятoгo." },

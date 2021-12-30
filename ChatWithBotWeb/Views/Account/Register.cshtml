@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <div class="text-danger" asp-validation-summary="All"></div>
-<form asp-action="Register" asp-controller="Account" method="post">
+<form class="p-4"  asp-action="Register" asp-controller="Account" method="post">
     <input type="hidden" asp-for="ReturnUrl" />
     <div class="form-group">
         <label asp-for="Name"></label>

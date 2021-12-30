@@ -1,7 +1,7 @@
-﻿using ChatWithBotWeb.Infrastructure;
-using ChatWithBotWeb.Models;
+﻿using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
 using ChatWithBotWeb.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,24 +14,47 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Controllers
 {
+    [Authorize]
+
     public class ChatController : Controller
     {
         private IRepositoryUser repositoryUser;
         private IRepositoryChat repositoryChat;
         private IRepositoryLogUser repositoryLogUser;
+        private IRepositoryBot repositoryBot;
 
 
 
-        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext, IRepositoryLogUser LogUsercontext)
+        public ChatController(IRepositoryUser Usercontext, IRepositoryChat Chatcontext, IRepositoryLogUser LogUsercontext, IRepositoryBot Botcontext)
         {
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
             repositoryLogUser = LogUsercontext;
+            repositoryBot = Botcontext;
         }
-        public ActionResult Index()
+        public ActionResult Index(int IdChat)
         {
-
-            return View();
+        
+            Chat chat = repositoryChat.GetChat(IdChat);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            ViewData["NameUser"] = user.Name;
+            if (!chat.Users.Contains(user))
+            {
+                chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
+                chat.Users.Add(user);
+                repositoryChat.UpdateChat(chat);
+            }
+            var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList(); //////Подумать 
+            var ListBotNames =  repositoryBot.BotNames.Except(chat.NameBots).ToList();
+            ChatUserViewModel model = new ChatUserViewModel()
+            {
+                Chat = chat,
+                UsersNotInclude = ListUsers,
+                HistoryChat = GetHistoryChat(chat, user),
+                CurrentUser = user,
+                NameBot = ListBotNames
+            };
+            return View(model);
         }
 
         public ActionResult CreateChat()
@@ -43,8 +66,8 @@ namespace ChatWithBotWeb.Controllers
         {
             var ListChat = repositoryChat.GetAllChat.OrderBy(c => c.ChatId);
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            ViewData["NameUser"] = user.Name;
             List<ChatViewModel> model = new List<ChatViewModel>();
-            ViewData["test"] = $"Текущий пользователь {user.Name}";
             foreach (var chat in ListChat)
             {
                 model.Add(new ChatViewModel()
@@ -52,7 +75,7 @@ namespace ChatWithBotWeb.Controllers
                     Id = chat.ChatId,
                     Bots = chat.ChatBot,
                     NameChat = chat.Name,
-                    Users = chat.Users
+                    Users = chat.Users,
                 });
 
             }
@@ -90,48 +113,42 @@ namespace ChatWithBotWeb.Controllers
         [HttpPost]
         public ActionResult CreateChat(Chat chat)
         {
-            try
+            if (ModelState.IsValid)
             {
-                var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
-                chat.Users.Add(user);
-                repositoryChat.AddChat(chat);
-                var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();////
-                ChatUserViewModel model = new ChatUserViewModel()
-                {
-                    Chat = chat,
-                    UsersNotInclude = ListUsers,
-                    HistoryChat = GetHistoryChat(chat, user)
-                };
-                return View("Index", model);
+              var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+              chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
+              chat.Users.Add(user);
+              repositoryChat.AddChat(chat);
+              return RedirectToAction("Index", new { IdChat = chat.ChatId });
             }
-            catch 
+            else
             {
+                ModelState.AddModelError(string.Empty, "Имя чата объязательно");
                 return View();
             }
         }
 
         public ActionResult AddMessage(string content,int chatId)
         {
-           
-            Chat chat = repositoryChat.GetChat(chatId);
-            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if (chat.Users.Contains(user))
+
+            if (!String.IsNullOrEmpty(content))
             {
+                Chat chat = repositoryChat.GetChat(chatId);
+                var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 Message message = new Message(content, user);
                 chat.ListMessage.Add(message);
-                //var listMesseg = chat.GetHistoryChat(chat, user);
                 repositoryChat.UpdateChat(chat);
-                return SelectChat(chat.ChatId);
+           
+
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Вы не являетесь участником чата");
-                return null;
+                ModelState.AddModelError(string.Empty, "Нельзя отправить пустое сообщение");
             }
+            return RedirectToAction("Index", new { IdChat = chatId });
 
         }
-        
+
         [HttpPost]
         public ActionResult AddUserInChat(string UserId , int ChatId)
         {
@@ -149,15 +166,33 @@ namespace ChatWithBotWeb.Controllers
             }
             chat.Users.Add(user);
             repositoryChat.UpdateChat(chat);
-            var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
-            ChatUserViewModel model = new ChatUserViewModel()
+            return RedirectToAction("Index", new { IdChat= ChatId });
+            
+        }
+        [HttpPost]
+        public ActionResult AddBot(int ChatId, string NameBot)
+        {
+            Chat chat = repositoryChat.GetChat(ChatId);
+            if (ModelState.IsValid)
             {
-                Chat = chat,
-                UsersNotInclude = ListUsers,
-                HistoryChat = GetHistoryChat(chat, user)
+                
+                chat.NameBots.Add(NameBot);
+                repositoryChat.UpdateChat(chat);
+                return RedirectToAction("Index", new { IdChat = ChatId });
+            }
+            else
+            {
+                return RedirectToAction("Index", new { IdChat = ChatId });
 
-            };
-            return View("Index", model);
+            }
+        }
+        [HttpPost]
+        public ActionResult DeleteBot(int ChatId, string NameBot)
+        {
+            Chat chat = repositoryChat.GetChat(ChatId);
+            chat.NameBots.Remove(NameBot);
+            repositoryChat.UpdateChat(chat);
+            return RedirectToAction("Index", new { IdChat = ChatId });
         }
         [HttpPost]
         public ActionResult DeleteUserInChat(string UserId, int ChatId)
@@ -166,14 +201,15 @@ namespace ChatWithBotWeb.Controllers
             Chat chat = repositoryChat.GetChat(ChatId);
             chat.Users.Remove(user);
             repositoryChat.UpdateChat(chat);
-            var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();///Подумать 
-            ChatUserViewModel model = new ChatUserViewModel()
-            {
-                Chat = chat,
-                UsersNotInclude = ListUsers,
-                HistoryChat = GetHistoryChat(chat, user)
-            };
-            return View("Index", model);
+            return RedirectToAction("Index", new { IdChat = ChatId });
+        }
+        [Authorize(Roles = "admin")]
+        [HttpPost]
+        public ActionResult DeleteChat(int ChatId)
+        {
+            Chat chat = repositoryChat.GetChat(ChatId);
+            repositoryChat.DeleteChat(chat);
+            return RedirectToAction("ShowCard");
         }
 
         private List<Message> GetHistoryChat(Chat chat, User user)

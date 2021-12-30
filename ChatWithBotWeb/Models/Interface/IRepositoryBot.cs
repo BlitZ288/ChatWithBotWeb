@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Interface
 {
-    interface IRepositoryBot
+    public interface IRepositoryBot
     {
         List<IBot> Bots { get; }
+        List<string> BotNames { get; }
     }
 }

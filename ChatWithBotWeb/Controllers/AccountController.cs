@@ -1,5 +1,4 @@
-﻿using ChatWithBotWeb.Infrastructure;
-using ChatWithBotWeb.Models;
+﻿using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
 using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +45,7 @@ namespace ChatWithBotWeb.Controllers
                     await signInManager.SignOutAsync();
                     if((await signInManager.PasswordSignInAsync(user, loginModel.Password, false, false)).Succeeded)
                     {
+                       
                         return Redirect(loginModel?.ReturnUrl ?? "Admin/Index");
 
                     }

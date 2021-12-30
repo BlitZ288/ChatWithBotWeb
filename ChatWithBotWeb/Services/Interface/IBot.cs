@@ -8,6 +8,7 @@ namespace ChatWithBotWeb.Models.Interface
 {
     public interface IBot
     {
+       
         public string NameBot { get; set; }
         /// <summary>
         /// Действие бота
@@ -16,5 +17,6 @@ namespace ChatWithBotWeb.Models.Interface
         /// <returns></returns>
         public string Move(string command);
         public StringBuilder GetAllCommand();
+       
     }
 }

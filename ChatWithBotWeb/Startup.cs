@@ -40,15 +40,7 @@ namespace ChatWithBotWeb
             services.AddTransient<IRepositoryChat, ChatRepository >();
             services.AddTransient<IRepositoryLogUser, LogUserRepository >();
             services.AddTransient<IRepositoryMessage, MessageRepository>();
-            services.AddTransient<IRepositoryBot, BotsRepository>();
-         
-           /// services.AddScoped<User>(sp=> SessionCart.GetCart(sp));
-           // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(option =>
-            //    {
-            //        option.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
-            //    });
+            services.AddTransient<IRepositoryBot, BotRepository>();
             services.AddMemoryCache();
             services.AddSession();
             
@@ -62,8 +54,8 @@ namespace ChatWithBotWeb
                 app.UseDeveloperExceptionPage();
             }
             else
-            {
-                app.UseExceptionHandler("/Home/Error");
+            {  
+
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
@@ -78,9 +70,9 @@ namespace ChatWithBotWeb
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Chat}/{action=ShowCard}/{id?}");
             });
-
+            //RoleInitializer.InitializeAsync();
         }
     }
 }

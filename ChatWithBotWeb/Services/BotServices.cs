@@ -37,7 +37,6 @@ namespace ChatWithBotWeb.Services
                using(var scope = provider.CreateScope())
                 {
                     var efContext = scope.ServiceProvider.GetService<IRepositoryMessage>();
-                    
                     var ListMessage = efContext.UnreadMessages();
                     if (ListMessage.Any())
                     {
@@ -46,6 +45,7 @@ namespace ChatWithBotWeb.Services
                         List<Message> messagesBots = new List<Message>();
                         foreach(var mes in ListMessage)
                         {
+                            if (mes.Chat.NameBots == null) { break; }
                             string[] contentMes = mes.Content.Trim().Split(" ");
                             foreach(var bot in ListBot)
                             {
