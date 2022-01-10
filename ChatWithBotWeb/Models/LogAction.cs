@@ -9,19 +9,19 @@ namespace ChatWithBotWeb.Models
     /// <summary>
     /// Логирует действия в чате 
     /// </summary>
-    [Serializable]
-    public class LogAction
+     public class LogAction
     {
        public int LogActionId { get; set; }
-       private DateTime FixLog { get; set; }
-       private string Content { get; set; }
-       private string NameUser { get; set; }
+       public DateTime FixLog { get; set; }
+       public string Content { get; set; }
+       public User User{ get; set; }
+       public Chat Chat { get; set; }
       
-        public LogAction(DateTime fixLog, string content,string nameUser)
+        public LogAction(DateTime fixLog, string content, User user)
         {
             FixLog = fixLog;
             Content = content;
-            NameUser = nameUser;
+            User = user;
         }
         public LogAction()
         {

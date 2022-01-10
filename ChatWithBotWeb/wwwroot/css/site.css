@@ -72,7 +72,7 @@ body {
     align-items: center;
 }
 .card__Chat{
-    padding-bottom:25px;
+    padding-bottom:10px;
 }
 .item__menu{
     color:#000000;
@@ -123,7 +123,7 @@ body {
     font-weight: bolder;
     padding-bottom: 5px;
     text-align: start;
-    padding-left: 5px;
+    /*padding-left: 5px;*/
 }
 
 .date_mes{
@@ -135,8 +135,26 @@ body {
     margin-bottom: 15px;
     overflow: auto;
     text-align: start;
-    padding-left: 15px;
+    /*padding-left: 15px;*/
     margin-bottom: 0;
+}
+.del__chat {
+    display: flex;   
+    justify-content: end;
+    padding-bottom: 10px;
+}
+.btn__close {
+    box-sizing: content-box;
+    width: 1em;
+    height: 1em;
+    padding: .25em .25em;
+    color: #000;
+    border: 0;
+    border-radius: .25rem;
+    opacity: .5;
+    outline: none; /* Для синий ободки */
+    border: 0;
+    background: transparent;
 }
 .footer {
     position: absolute;

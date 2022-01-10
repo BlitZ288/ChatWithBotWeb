@@ -12,8 +12,11 @@
     <div class="container">
         <div class="navbar navbar-invers navbar-dark bg-light" role="navigation">
             <a class="nav-link " href=@Url.Action("Index","Home")>Chat</a>
-            <a class="nav-link " href=@Url.Action("CreateChat","Chat")>Создать чат </a>
-            <a class="nav-link " href=@Url.Action("ShowCard","Chat")>Список чатов</a>
+            <a class="nav-link " href=@Url.Action("CreateChat","Home")>Создать чат </a>
+            @if (User.IsInRole("Manager"))
+            {
+                <a class="nav-link " href=@Url.Action("Index","Roles")>Управление ролями</a>
+            }
             <label>@ViewData["NameUser"]</label>
             <a class="btn btn-info" href=@Url.Action("Logut","Account")>Выход</a>
 

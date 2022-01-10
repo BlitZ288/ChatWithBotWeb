@@ -70,9 +70,8 @@ namespace ChatWithBotWeb
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Chat}/{action=ShowCard}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}");
             });
-            //RoleInitializer.InitializeAsync();
         }
     }
 }

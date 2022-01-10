@@ -45,8 +45,14 @@ namespace ChatWithBotWeb.Controllers
                     await signInManager.SignOutAsync();
                     if((await signInManager.PasswordSignInAsync(user, loginModel.Password, false, false)).Succeeded)
                     {
-                       
-                        return Redirect(loginModel?.ReturnUrl ?? "Admin/Index");
+                        if (!String.IsNullOrEmpty(loginModel.ReturnUrl) && Url.IsLocalUrl(loginModel.ReturnUrl))
+                        {
+                            return Redirect(loginModel.ReturnUrl);
+                        }
+                        else
+                        {
+                            return Redirect("Home/Index");
+                        }
 
                     }
                 }

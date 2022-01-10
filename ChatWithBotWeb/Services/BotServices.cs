@@ -21,7 +21,6 @@ namespace ChatWithBotWeb.Services
         }
         public  Task StartAsync(CancellationToken cancellationToken)
         {
-            
             Task.Run(() => DoWork(),cancellationToken).ConfigureAwait(false);
             return Task.CompletedTask;
         }
@@ -31,10 +30,9 @@ namespace ChatWithBotWeb.Services
         }
         public async Task DoWork ()
         {
-           
             while (true)
             {
-               using(var scope = provider.CreateScope())
+                using(var scope = provider.CreateScope())
                 {
                     var efContext = scope.ServiceProvider.GetService<IRepositoryMessage>();
                     var ListMessage = efContext.UnreadMessages();
@@ -60,15 +58,13 @@ namespace ChatWithBotWeb.Services
                                         messagesBots.Add(message);
                                     }
                                 }
-                               
                             }
                             mes.Undread = false;
                         }
                         efContext.AddMessages(messagesBots);
                     }
-
                 }
-                await Task.Delay(10000);
+              //  await Task.Delay(10000);
             }
         }
     }

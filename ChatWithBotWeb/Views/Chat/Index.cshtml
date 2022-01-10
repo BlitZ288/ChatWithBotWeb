@@ -1,6 +1,12 @@
 ﻿@model ChatUserViewModel
 <div class="text-center ">
-    <div class="text-danger" asp-validation-summary="All"></div>
+    <div class="text-danger" asp-validation-summary="All">
+        @if (TempData["Errors"] != null)
+        {
+            <span> @TempData["Errors"];</span>
+        }
+      
+    </div>
 
     <div class="container conteiner__Chat pt-5">
         <div class="row">
@@ -39,17 +45,20 @@
                                     </form>
                                 </li>
                             }
-                            @foreach (var Name in Model.Chat.NameBots)
-                            {
-                                <li class=" list-group-item item__user">
-                                    @Name
-                                    <form asp-action="DeleteBot" method="post">
-                                        <input type="hidden" name="ChatId" value="@Model.Chat.ChatId" />
-                                        <input type="hidden" name="NameBot" value="@Name" />
-                                        <button type="submit" class="btn btn-outline-danger btn__user">Удалить из чата </button>
-                                    </form>
-                                </li>
-                            }
+                            @if (Model.Chat.NameBots != null)
+                             {
+                                foreach (var Name in Model.Chat.NameBots)
+                                {
+                                    <li class=" list-group-item item__user">
+                                        @Name
+                                        <form asp-action="DeleteBot" method="post">
+                                            <input type="hidden" name="ChatId" value="@Model.Chat.ChatId" />
+                                            <input type="hidden" name="NameBot" value="@Name" />
+                                            <button type="submit" class="btn btn-outline-danger btn__user">Удалить из чата </button>
+                                        </form>
+                                    </li>
+                                }
+                             }
                         </ul>
                     </div>
                 </div>
@@ -62,6 +71,11 @@
                     {
                         <div class="@(mes.User!=null&&mes.User.Equals(Model.CurrentUser) ? "you_mes" :"notyou_mes") container_item ">
                             <div class="item_mes">
+                                <form style="text-align:end;" asp-action="DeleteMessage" asp-controller="Chat" method="post">
+                                    <input type="hidden" name="chatId" value="@Model.Chat.ChatId" />
+                                    <input type="hidden" name="messageId" value="@mes.MessageId" />
+                                    <button type="submit" class="btn__close">Х</button>
+                                </form>
                                 <span class="name_user">
                                     @{ if (mes.User != null)
                                         {
@@ -77,15 +91,14 @@
                                     @mes.Content
                                 </p>
                                 <span class="date_mes">  @mes.dateTime.ToString("HH:mm")</span>
-
                             </div>
+                            
                         </div>
                     }
                 </div>
-                <form asp-action="AddMessage" asp-controller="Chat">
+                <form asp-action="AddMessage" asp-controller="Chat" method="post">
                     <input type="text" name="content" placeholder="Введите сообщение" class="input-group-text w-100" />
                     <input type="hidden" name="chatId" value="@Model.Chat.ChatId" />
-                   
                     <button type="submit" class="btn btn-primary  mt-4">Отправить</button>
                 </form>
                 <form asp-action="AddBot" asp-controller="Chat">
