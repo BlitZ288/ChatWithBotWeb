@@ -33,7 +33,13 @@ namespace ChatWithBotWeb
             services.AddDbContext<AppIdentityDbContex>(option => option.UseNpgsql(
                     Configuration["Data:ChatBotWebIdentity:ConnectionString"]
                ));
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(opts=> {
+                opts.Password.RequiredLength = 4;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireUppercase = false;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireDigit = false;
+            })
                 .AddEntityFrameworkStores<AppIdentityDbContex>()
                 .AddDefaultTokenProviders();
             services.AddTransient<IRepositoryUser, RepositoryUser >();

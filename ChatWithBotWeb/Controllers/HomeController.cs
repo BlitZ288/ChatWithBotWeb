@@ -1,22 +1,16 @@
-﻿using ChatWithBotWeb.Models;
-using ChatWithBotWeb.Models.Db;
+﻿using ChatWithBotWeb.Infrastructure;
+using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
-using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Controllers
 {
-    [Authorize]
+    
     public class HomeController : Controller
     {
         private IRepositoryUser repositoryUser;
@@ -26,6 +20,7 @@ namespace ChatWithBotWeb.Controllers
             repositoryUser = Usercontext;
             repositoryChat = Chatcontext;
         }
+        [Authorize]
         public ActionResult Index()
         {
             var ListChat = repositoryChat.GetAllChat.OrderBy(c => c.ChatId);
@@ -52,14 +47,11 @@ namespace ChatWithBotWeb.Controllers
         [HttpPost]
         public ActionResult CreateChat(Chat chat)
         {
-            
             if (ModelState.IsValid)
             {
                 var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
-                StackTrace st = new StackTrace();
-                StackFrame sf = st.GetFrame(1);
-                LogAction logAction = new LogAction(DateTime.Now, sf.GetMethod().Name, user);
+                chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user }); 
+                LogAction logAction = new LogAction(DateTime.Now,EventChat.CreateChat, user);
                 chat.LogActions.Add(logAction);
                 chat.Users.Add(user);
                 repositoryChat.AddChat(chat);
@@ -74,30 +66,12 @@ namespace ChatWithBotWeb.Controllers
         public ActionResult DeleteChat(int IdChat)
         {
             Chat chat = repositoryChat.GetChat(IdChat);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             repositoryChat.DeleteChat(chat);
+
             return RedirectToAction("Index");
         }
 
-        //[HttpPost]
-        //public ActionResult SelectChat(int IdChat)
-        //{
-        //    try
-        //    {
-        //        Chat chat = repositoryChat.GetChat(IdChat);
-        //        var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-               
-        //        if (!chat.Users.Contains(user))
-        //        {
-        //            chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
-        //            chat.Users.Add(user);
-        //            repositoryChat.UpdateChat(chat);
-        //        }
-        //        return RedirectToAction("Index", "Chat", new { IdChat = chat.ChatId });
-        //    }
-        //    catch
-        //    {
-        //        return RedirectToAction("ShowCard");
-        //    }
-        //}
     }
 }

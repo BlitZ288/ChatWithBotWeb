@@ -33,14 +33,13 @@
                     </button>
                 </form>
              </div>
-             @if (User.IsInRole("Manager"))
+             if (User.IsInRole("Manager"))
              {
                  <form id="@c.Id" class=" del__chat" asp-action="DeleteChat" asp-controller="Home" method="post">
                             <input type="hidden" asp-for="@c.Id" name="IdChat" />
                             <button class="btn btn-outline-danger" >Удалить чат</button>
                  </form>    
-              }
-
+             }
          }
     }
     else { 

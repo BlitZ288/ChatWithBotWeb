@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Interface
 {
-    public interface IBot
+    public interface IBot<T>
     {
        
         public string NameBot { get; set; }
@@ -15,7 +15,8 @@ namespace ChatWithBotWeb.Models.Interface
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public string Move(string command);
+        public  string Move(T command);
+      
         public StringBuilder GetAllCommand();
        
     }

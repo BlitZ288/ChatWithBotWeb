@@ -42,10 +42,10 @@ namespace ChatWithBotWeb.Controllers
                 User user = await userManager.FindByNameAsync(loginModel.Name);
                 if (user != null)
                 {
-                    await signInManager.SignOutAsync();
-                    if((await signInManager.PasswordSignInAsync(user, loginModel.Password, false, false)).Succeeded)
+                    var result = await signInManager.PasswordSignInAsync(user, loginModel.Password, true, false);
+                    if (result.Succeeded)
                     {
-                        if (!String.IsNullOrEmpty(loginModel.ReturnUrl) && Url.IsLocalUrl(loginModel.ReturnUrl))
+                        if (!string.IsNullOrEmpty(loginModel.ReturnUrl) && Url.IsLocalUrl(loginModel.ReturnUrl))
                         {
                             return Redirect(loginModel.ReturnUrl);
                         }

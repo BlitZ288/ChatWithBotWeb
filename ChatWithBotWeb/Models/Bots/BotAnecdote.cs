@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Bots
 {
-    public class BotAnecdote: IBot
+    public class BotAnecdote: IBot<string>
     {
         public string NameBot
         {

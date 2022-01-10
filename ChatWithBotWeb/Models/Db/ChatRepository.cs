@@ -65,7 +65,7 @@ namespace ChatWithBotWeb.Models.Db
                     foreach (var name in chat.NameBots)
                     {
                     try
-                    {
+                    {   /*Подумать как сделать джинерик по умному */
                         Type type = Type.GetType("ChatWithBotWeb.Models.Bots." + name);
                         IBot bot = (IBot)Activator.CreateInstance(type);
                         chat.ChatBot.Add(bot);

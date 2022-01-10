@@ -1,4 +1,5 @@
-﻿using ChatWithBotWeb.Models;
+﻿using ChatWithBotWeb.Infrastructure;
+using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Interface;
 using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -69,6 +70,8 @@ namespace ChatWithBotWeb.Controllers
                 var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 Message message = new Message(content, user);
                 chat.ListMessage.Add(message);
+                LogAction logAction = new LogAction(DateTime.Now, EventChat.SendMessage, user);
+                chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
             }
             else
@@ -84,11 +87,13 @@ namespace ChatWithBotWeb.Controllers
             Chat chat = repositoryChat.GetChat(chatId);
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             Message message=chat.ListMessage.Find(m=>m.MessageId==messageId);
-
             if (message.User != null && message.User.Equals(user))
             {
                 chat.ListMessage.Remove(message);
+                LogAction logAction = new LogAction(DateTime.Now, EventChat.DeleteMessage, user);
+                chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
+
                 return RedirectToAction("Index", new { IdChat = chatId });
             }
             else
@@ -101,6 +106,8 @@ namespace ChatWithBotWeb.Controllers
         public ActionResult AddUserInChat(string UserId , int ChatId)
         {
             User user = repositoryUser.GetUser(UserId);
+            var currentUser = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             Chat chat = repositoryChat.GetChat(ChatId);
             LogsUser logsUser = repositoryLogUser.GetLog(user,chat);
             if (logsUser==null)
@@ -113,6 +120,8 @@ namespace ChatWithBotWeb.Controllers
                 chat.ChatLogUsers.ElementAt(logsUser.LogsUserId).StopChat = null;
             }
             chat.Users.Add(user);
+            LogAction logAction = new LogAction(DateTime.Now, EventChat.DeleteMessage, currentUser);
+            chat.LogActions.Add(logAction);
             repositoryChat.UpdateChat(chat);
             return RedirectToAction("Index", new { IdChat= ChatId });
             
@@ -121,10 +130,12 @@ namespace ChatWithBotWeb.Controllers
         public ActionResult AddBot(int ChatId, string NameBot)
         {
             Chat chat = repositoryChat.GetChat(ChatId);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (ModelState.IsValid)
             {
-                
                 chat.NameBots.Add(NameBot);
+                LogAction logAction = new LogAction(DateTime.Now, EventChat.InviteBot, user);
+                chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
                 return RedirectToAction("Index", new { IdChat = ChatId });
             }
@@ -137,7 +148,10 @@ namespace ChatWithBotWeb.Controllers
         public ActionResult DeleteBot(int ChatId, string NameBot)
         {
             Chat chat = repositoryChat.GetChat(ChatId);
+            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             chat.NameBots.Remove(NameBot);
+            LogAction logAction = new LogAction(DateTime.Now, EventChat.DeleteBot, user);
+            chat.LogActions.Add(logAction);
             repositoryChat.UpdateChat(chat);
             return RedirectToAction("Index", new { IdChat = ChatId });
         }
@@ -146,7 +160,10 @@ namespace ChatWithBotWeb.Controllers
         {
             User user = repositoryUser.GetUser(UserId);
             Chat chat = repositoryChat.GetChat(ChatId);
+            var currentUser = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             chat.Users.Remove(user);
+            LogAction logAction = new LogAction(DateTime.Now, EventChat.DeletePerson, currentUser);
+            chat.LogActions.Add(logAction);
             repositoryChat.UpdateChat(chat);
             return RedirectToAction("Index", new { IdChat = ChatId });
         }

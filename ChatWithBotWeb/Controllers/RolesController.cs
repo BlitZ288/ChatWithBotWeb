@@ -85,9 +85,7 @@ namespace ChatWithBotWeb.Controllers
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await UserManager.GetRolesAsync(user);
-                // получаем все роли
-                var allRoles = RoleManager.Roles.ToList();
+                var userRoles = await UserManager.GetRolesAsync(user);               
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены

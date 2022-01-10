@@ -34,37 +34,66 @@ namespace ChatWithBotWeb.Services
             {
                 using(var scope = provider.CreateScope())
                 {
-                    var efContext = scope.ServiceProvider.GetService<IRepositoryMessage>();
-                    var ListMessage = efContext.UnreadMessages();
+                    var efContextMessage = scope.ServiceProvider.GetService<IRepositoryMessage>();
+                    var efContextAction = scope.ServiceProvider.GetService<IRepositoryLogAction>();
+                    var efContextBot = scope.ServiceProvider.GetService<IRepositoryBot>();
+                    var ListMessage = efContextMessage.UnreadMessages();
+                    var ListAction = efContextAction.GetLogUnderRead();
+                    /*Работа с собщениями */
                     if (ListMessage.Any())
                     {
-                        var efContextBot = scope.ServiceProvider.GetService<IRepositoryBot>();
-                        var ListBot = efContextBot.Bots;
-                        List<Message> messagesBots = new List<Message>();
-                        foreach(var mes in ListMessage)
-                        {
-                            if (mes.Chat.NameBots == null) { break; }
-                            string[] contentMes = mes.Content.Trim().Split(" ");
-                            foreach(var bot in ListBot)
-                            {
-                                string mesBot = "";
-                                foreach(var word in contentMes)
-                                {
-                                    mesBot= bot.Move(word.ToUpper());
-                                    if (!String.IsNullOrEmpty(mesBot))
-                                    {
-                                        Message message = new Message(mesBot, bot.NameBot);
-                                        message.Chat = mes.Chat;
-                                        messagesBots.Add(message);
-                                    }
-                                }
-                            }
-                            mes.Undread = false;
-                        }
-                        efContext.AddMessages(messagesBots);
+                        WorkMessage(efContextBot, efContextMessage);
+                    }
+                    /*Работа с событиями */
+                    if (ListAction.Any())
+                    {
+                        WorkEvent(efContextBot, efContextAction);
                     }
                 }
               //  await Task.Delay(10000);
+            }
+        }
+        private void WorkMessage(IRepositoryBot efContextBot, IRepositoryMessage efContextMessage)
+        {
+            var ListMessage = efContextMessage.UnreadMessages();
+            var ListBot = efContextBot.Bots;
+            List<Message> messagesBots = new List<Message>();
+            foreach (var mes in ListMessage)
+            {
+                if (mes.Chat.NameBots == null) { break; }
+                string[] contentMes = mes.Content.Trim().Split(" ");
+                foreach (var bot in ListBot)
+                {
+                    string mesBot = "";
+                    foreach (var word in contentMes)
+                    {
+                        mesBot = bot.Move(word.ToUpper());
+                        if (!String.IsNullOrEmpty(mesBot))
+                        {
+                            Message message = new Message(mesBot, bot.NameBot);
+                            message.Chat = mes.Chat;
+                            messagesBots.Add(message);
+                        }
+                    }
+                }
+                mes.Undread = false;
+            }
+            efContextMessage.AddMessages(messagesBots);
+        }
+        private void WorkEvent(IRepositoryBot efContextBot, IRepositoryLogAction efContextAction)
+        {
+            var ListLogsAction = efContextAction.GetLogUnderRead();
+            var ListBot = efContextBot.Bots;
+            List<Message> messagesBots = new List<Message>();
+            foreach (var action in ListLogsAction)
+            {
+                if (action.Chat.ChatBot.Any())
+                {
+                    foreach(var bot in ListBot)
+                    {
+
+                    }
+                }
             }
         }
     }
