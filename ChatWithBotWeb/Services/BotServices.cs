@@ -15,6 +15,7 @@ namespace ChatWithBotWeb.Services
     public class BotServices : IHostedService
     {
         private IServiceProvider provider;
+        static Semaphore semaphore = new Semaphore(3, 3);
         public BotServices(IServiceProvider Serviceprovider)
         {
             provider = Serviceprovider;
@@ -47,54 +48,69 @@ namespace ChatWithBotWeb.Services
                     /*Работа с событиями */
                     if (ListAction.Any())
                     {
-                        WorkEvent(efContextBot, efContextAction);
+                        WorkEvent(efContextBot, efContextAction,efContextMessage);
                     }
+                    //semaphore.WaitOne();
                 }
-              //  await Task.Delay(10000);
+                await Task.Delay(100);
             }
         }
         private void WorkMessage(IRepositoryBot efContextBot, IRepositoryMessage efContextMessage)
         {
             var ListMessage = efContextMessage.UnreadMessages();
-            var ListBot = efContextBot.Bots;
+            var ListBot = efContextBot.GetMessageBots;
             List<Message> messagesBots = new List<Message>();
             foreach (var mes in ListMessage)
             {
-                if (mes.Chat.NameBots == null) { break; }
-                string[] contentMes = mes.Content.Trim().Split(" ");
-                foreach (var bot in ListBot)
+                if (mes.Chat != null)
                 {
-                    string mesBot = "";
-                    foreach (var word in contentMes)
+                    if (mes.Chat.NameBots == null) { break; }
+                    string[] contentMes = mes.Content.Trim().Split(" ");
+                    foreach (var bot in ListBot)
                     {
-                        mesBot = bot.Move(word.ToUpper());
-                        if (!String.IsNullOrEmpty(mesBot))
+                        string mesBot = "";
+                        foreach (var word in contentMes)
                         {
-                            Message message = new Message(mesBot, bot.NameBot);
-                            message.Chat = mes.Chat;
-                            messagesBots.Add(message);
+                            mesBot = bot.Move(word.ToUpper());
+                            if (!String.IsNullOrEmpty(mesBot))
+                            {
+                                Message message = new Message(mesBot, bot.NameBot);
+                                message.Chat = mes.Chat;
+                                messagesBots.Add(message);
+                            }
                         }
                     }
-                }
-                mes.Undread = false;
+                    mes.Undread = false;
+                    }
             }
             efContextMessage.AddMessages(messagesBots);
         }
-        private void WorkEvent(IRepositoryBot efContextBot, IRepositoryLogAction efContextAction)
+        private void WorkEvent(IRepositoryBot efContextBot, IRepositoryLogAction efContextAction, IRepositoryMessage efContextMessage)
         {
             var ListLogsAction = efContextAction.GetLogUnderRead();
-            var ListBot = efContextBot.Bots;
+            var ListBot = efContextBot.GetEventBots();
             List<Message> messagesBots = new List<Message>();
             foreach (var action in ListLogsAction)
             {
-                if (action.Chat.ChatBot.Any())
+                if (action.Chat != null)
                 {
-                    foreach(var bot in ListBot)
-                    {
+                    if (action.Chat.NameBots == null) { break; }
 
+                    foreach (var bot in ListBot)
+                    {
+                        string mesBot = bot.Move(action.Content);
+                        if (!String.IsNullOrEmpty(mesBot))
+                        {
+                            Message message = new Message(mesBot, bot.NameBot);
+                            message.Chat = action.Chat;
+                            messagesBots.Add(message);
+                        }
                     }
+                    action.Undread = false;
                 }
             }
+            efContextAction.Update(ListLogsAction);
+            efContextMessage.AddMessages(messagesBots);
         }
     }
 }

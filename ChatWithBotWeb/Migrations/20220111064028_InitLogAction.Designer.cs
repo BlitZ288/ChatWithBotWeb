@@ -4,36 +4,23 @@ using System.Collections.Generic;
 using ChatWithBotWeb.Models.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatWithBotWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220111064028_InitLogAction")]
+    partial class InitLogAction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.13")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-            modelBuilder.Entity("ChatUser", b =>
-                {
-                    b.Property<int>("ChatsChatId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("text");
-
-                    b.HasKey("ChatsChatId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ChatUser");
-                });
 
             modelBuilder.Entity("ChatWithBotWeb.Models.Chat", b =>
                 {
@@ -155,6 +142,9 @@ namespace ChatWithBotWeb.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ChatId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("text");
 
@@ -202,22 +192,9 @@ namespace ChatWithBotWeb.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ChatId");
+
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ChatUser", b =>
-                {
-                    b.HasOne("ChatWithBotWeb.Models.Chat", null)
-                        .WithMany()
-                        .HasForeignKey("ChatsChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatWithBotWeb.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ChatWithBotWeb.Models.LogAction", b =>
@@ -265,6 +242,13 @@ namespace ChatWithBotWeb.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ChatWithBotWeb.Models.User", b =>
+                {
+                    b.HasOne("ChatWithBotWeb.Models.Chat", null)
+                        .WithMany("Users")
+                        .HasForeignKey("ChatId");
+                });
+
             modelBuilder.Entity("ChatWithBotWeb.Models.Chat", b =>
                 {
                     b.Navigation("ChatLogUsers");
@@ -272,6 +256,8 @@ namespace ChatWithBotWeb.Migrations
                     b.Navigation("ListMessage");
 
                     b.Navigation("LogActions");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ChatWithBotWeb.Models.User", b =>

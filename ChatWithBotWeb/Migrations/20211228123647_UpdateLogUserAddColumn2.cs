@@ -36,7 +36,7 @@ namespace ChatWithBotWeb.Migrations
                         name: "FK_LogAction_Chats_ChatId",
                         column: x => x.ChatId,
                         principalTable: "Chats",
-                        principalColumn: "ChatId",
+                        principalColumn: "ChatId",                        
                         onDelete: ReferentialAction.Restrict);
                 });
 

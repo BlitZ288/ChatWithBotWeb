@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Bots
 {
-    public class BotAnecdote: IBot<string>
+    public class BotAnecdote: IBot
     {
         public string NameBot
         {
@@ -28,12 +28,12 @@ namespace ChatWithBotWeb.Models.Bots
             {"ХОЧУ АНЕКДОТ","— Пaп, у мeня кoлeсo спустилo... \n— A чё ты мнe звoнишь, дoчь, у тeбя ж муж eсть, вoт eму и звoни! \n— Дa, блин, звoнилa, oн нe oтвeчaeт...\n  — Ну a зaпaснoгo нeт? \n — Звoнилa, oн тoжe нe oтвeчaeт... ." },
             {"ЛУЧШИЙ", "Сел медведь в тачку с заряженым автозвуком и сгорел " }
         };
-        public string Move(string command)
+        public string Move(object command)
         {
           
-            if (ListAnecdot.ContainsKey(command))
+            if (ListAnecdot.ContainsKey((string)command))
             {
-                return ListAnecdot[command];
+                return ListAnecdot[(string)command];
             }
             else
             {

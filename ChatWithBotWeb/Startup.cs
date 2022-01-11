@@ -47,6 +47,7 @@ namespace ChatWithBotWeb
             services.AddTransient<IRepositoryLogUser, LogUserRepository >();
             services.AddTransient<IRepositoryMessage, MessageRepository>();
             services.AddTransient<IRepositoryBot, BotRepository>();
+            services.AddTransient<IRepositoryLogAction,LogActionRepository>();
             services.AddMemoryCache();
             services.AddSession();
             

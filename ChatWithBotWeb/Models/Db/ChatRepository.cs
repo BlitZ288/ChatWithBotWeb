@@ -57,9 +57,9 @@ namespace ChatWithBotWeb.Models.Db
 
         public Chat GetChat(int indexChat)
         {
-          Chat chat=  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage)
-                                                         .Include(c => c.ChatLogUsers)
-                                                         .FirstOrDefault(c => c.ChatId == indexChat);
+          Chat chat=  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).Include(c=>c.LogActions)
+                                                                                     .Include(c => c.ChatLogUsers)
+                                                                                     .FirstOrDefault(c => c.ChatId == indexChat);
                 if (chat.NameBots != null)
                 {
                     foreach (var name in chat.NameBots)

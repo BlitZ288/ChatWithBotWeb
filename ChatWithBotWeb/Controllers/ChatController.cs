@@ -1,5 +1,6 @@
 ﻿using ChatWithBotWeb.Infrastructure;
 using ChatWithBotWeb.Models;
+using ChatWithBotWeb.Models.Bots;
 using ChatWithBotWeb.Models.Interface;
 using ChatWithBotWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -39,17 +40,19 @@ namespace ChatWithBotWeb.Controllers
             {
                 chat.ChatLogUsers.Add(new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user });
                 chat.Users.Add(user);
+                LogAction logAction = new LogAction(DateTime.Now, EventChat.JoinChat, user);
+                chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
             }
             var ListUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList(); //////Подумать 
             List<string> ListBotNames;
             if (chat.ChatBot.Any())
             {
-                ListBotNames = repositoryBot.BotNames.Except(chat.NameBots).ToList();
+                ListBotNames = repositoryBot.GetAllNameBots.Except(chat.NameBots).ToList();
             }
             else
             {
-                ListBotNames = repositoryBot.BotNames.ToList();
+                ListBotNames = repositoryBot.GetAllNameBots.ToList();
             }
             ChatUserViewModel model = new ChatUserViewModel()
             {
@@ -116,11 +119,11 @@ namespace ChatWithBotWeb.Controllers
                 chat.ChatLogUsers.Add(logs);
             }
             else
-            {
-                chat.ChatLogUsers.ElementAt(logsUser.LogsUserId).StopChat = null;
+            {       
+                logsUser.StopChat = null;
             }
             chat.Users.Add(user);
-            LogAction logAction = new LogAction(DateTime.Now, EventChat.DeleteMessage, currentUser);
+            LogAction logAction = new LogAction(DateTime.Now, EventChat.JoinChat, currentUser);
             chat.LogActions.Add(logAction);
             repositoryChat.UpdateChat(chat);
             return RedirectToAction("Index", new { IdChat= ChatId });
@@ -129,7 +132,7 @@ namespace ChatWithBotWeb.Controllers
         [HttpPost]
         public ActionResult AddBot(int ChatId, string NameBot)
         {
-            Chat chat = repositoryChat.GetChat(ChatId);
+            Chat chat = repositoryChat.GetChat(ChatId);           
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (ModelState.IsValid)
             {
@@ -162,10 +165,21 @@ namespace ChatWithBotWeb.Controllers
             Chat chat = repositoryChat.GetChat(ChatId);
             var currentUser = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
             chat.Users.Remove(user);
+            LogsUser logsUser = repositoryLogUser.GetLog(user, chat);
+            logsUser.StopChat = DateTime.Now;
             LogAction logAction = new LogAction(DateTime.Now, EventChat.DeletePerson, currentUser);
             chat.LogActions.Add(logAction);
-            repositoryChat.UpdateChat(chat);
-            return RedirectToAction("Index", new { IdChat = ChatId });
+            if (chat.Users.Count == 0)
+            {
+                repositoryChat.DeleteChat(chat);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                repositoryChat.UpdateChat(chat);
+                return RedirectToAction("Index", new { IdChat = ChatId });
+            }
+            
         }
         private List<Message> GetHistoryChat(Chat chat, User user)
         {

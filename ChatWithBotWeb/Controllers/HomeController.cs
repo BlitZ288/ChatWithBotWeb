@@ -66,10 +66,7 @@ namespace ChatWithBotWeb.Controllers
         public ActionResult DeleteChat(int IdChat)
         {
             Chat chat = repositoryChat.GetChat(IdChat);
-            var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
             repositoryChat.DeleteChat(chat);
-
             return RedirectToAction("Index");
         }
 

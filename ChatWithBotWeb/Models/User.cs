@@ -11,7 +11,7 @@ namespace ChatWithBotWeb.Models
         public string Name { get; set; }
         public string Password { get; set; }
         public List<LogsUser> LogsUsers { get; set; } = new List<LogsUser>();
-
+        public List<Chat> Chats { get; set; } = new List<Chat>();
         public User(string name)
         {
            Name = name;

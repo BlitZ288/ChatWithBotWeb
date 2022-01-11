@@ -1,5 +1,6 @@
 ﻿using ChatWithBotWeb.Infrastructure;
 using ChatWithBotWeb.Models.Interface;
+using ChatWithBotWeb.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Bots
 {
-    public class BotEvent : IBot<EventChat>
+    public class BotEvent : IBot
     {
         public string NameBot
         {
@@ -20,19 +21,19 @@ namespace ChatWithBotWeb.Models.Bots
             {
 
             }
+
         }
-        
-        public StringBuilder GetAllCommand()
+        public  StringBuilder GetAllCommand()
         {
             throw new NotImplementedException();
         }
 
-        public  string Move(EventChat command)
+        public  string Move(object command)
         {
             string result = "";
             switch (command)
             {
-                case EventChat.CreateChat:
+                case EventChat.JoinChat:
                     result = "Добро пожаловать в чат ";
                     break;
                 case EventChat.DeletePerson:
@@ -44,5 +45,7 @@ namespace ChatWithBotWeb.Models.Bots
             }
             return result;
         }
+
+        
     }
 }

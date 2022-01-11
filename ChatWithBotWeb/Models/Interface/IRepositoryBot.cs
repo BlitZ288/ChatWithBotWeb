@@ -7,7 +7,12 @@ namespace ChatWithBotWeb.Models.Interface
 {
     public interface IRepositoryBot
     {
-        List<IBot> Bots { get; }
-        List<string> BotNames { get; }
+        List<IBot> GetAllBots { get; }
+        List<string> GetAllNameBots { get; }
+        List<IBot> GetMessageBots { get; }
+        List<string> GetNameMessageBots();
+        List<IBot> GetEventBots();
+        List<string> GetNameEventBots();
+       
     }
 }

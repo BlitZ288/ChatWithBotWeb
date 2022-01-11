@@ -31,10 +31,20 @@ namespace ChatWithBotWeb.Models.Db
             return Context.LogActions.Include(l => l.Chat).Include(l => l.User).ToList();
         }
 
-        public List< LogAction> GetLogUnderRead(Chat chat)
+        public List< LogAction> GetLogUnderRead()
         {
             return Context.LogActions.Include(l => l.Chat).Include(l => l.User).Where(l=>l.Undread==true).ToList();
 
+        }
+
+        public void Update(List<LogAction> logsAction)
+        {
+            Context.SaveChanges();
+        }
+
+        public void Update(LogAction logsAction)
+        {
+            Context.SaveChanges();
         }
     }
 }

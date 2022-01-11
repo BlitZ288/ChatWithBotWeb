@@ -9,6 +9,8 @@ namespace ChatWithBotWeb.Models.Interface
     {
         List<LogAction> GetAll();
         List<LogAction> GetLogUnderRead();
+        void Update(List<LogAction> logsAction);
+        void Update(LogAction logsAction);
         void AddLog(LogAction logsAction);
         void DeleteLog(LogAction logsAction);
     }

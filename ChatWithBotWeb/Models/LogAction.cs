@@ -15,6 +15,7 @@ namespace ChatWithBotWeb.Models
        public int LogActionId { get; set; }
        public DateTime FixLog { get; set; }
        public EventChat Content { get; set; }
+       public int? ChatId { get; set; }
        public bool Undread { get; set; }
        public User User{ get; set; }
        public Chat Chat { get; set; }
@@ -24,6 +25,7 @@ namespace ChatWithBotWeb.Models
             FixLog = fixLog;
             Content = content;
             User = user;
+            Undread = true;
         }
         public LogAction()
         {
