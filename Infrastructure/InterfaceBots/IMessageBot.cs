@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coman.InterfaceBots
 {
-    public interface IMessageBot
+    public interface IMessageBot : IBot
     {
         public string NameBot { get; }
         /// <summary>

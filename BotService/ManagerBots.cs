@@ -12,14 +12,22 @@ namespace BotService
         private readonly IEnumerable<IMessageBot> messageBots;
         private readonly IEnumerable<IEventBot> eventBots;
         private readonly IEnumerable<string> listNameBots;
-
-        public ManagerBots()
+        private bool isRunning;
+        public ManagerBots()///BotsManger
         {
-            BotFactory botFactory = new BotFactory();
-            botFactory.Init();//Косяк 
+           
+        }
+        public void Start()
+        {
+            if (isRunning)
+            {
+                throw new Exception("Вы пытаетесь повторно запустить BotsManager");
+            }
+            BotsRepository botFactory = new BotsRepository();
+            botFactory.Init(); 
             this.messageBots = botFactory.ListMessageBots;
             this.eventBots = botFactory.ListEventBots;
-            this.listNameBots = botFactory.ListNameBots; 
+            this.listNameBots = botFactory.ListNameBots;
         }
         public IEnumerable<string> GetAllNameBots()
         {
