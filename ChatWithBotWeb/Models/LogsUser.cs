@@ -9,7 +9,6 @@ namespace ChatWithBotWeb.Models
     /// <summary>
     /// Логирует вступление в чат и выход из него
     /// </summary>
-    [Serializable]
     public class LogsUser
     {
        public int LogsUserId { get; set; }

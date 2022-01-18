@@ -25,7 +25,7 @@ namespace ChatWithBotWeb.Models
 
         public List<LogsUser> ChatLogUsers { get; set; } = new List<LogsUser>();
         public List<string> NameBots { get; set; } = new List<string>();
-        public List<IBot> ChatBot  = new List<IBot>();
+
         public Chat(User user, string name)
         {
             Name = name;

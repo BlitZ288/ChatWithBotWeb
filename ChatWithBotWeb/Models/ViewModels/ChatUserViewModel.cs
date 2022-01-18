@@ -11,6 +11,6 @@ namespace ChatWithBotWeb.Models.ViewModels
         public User CurrentUser { get; set; }
         public List<User> UsersNotInclude { get; set; }
         public List<Message> HistoryChat{ get; set; }
-        public List<string> NameBot{ get; set; }
+        public List<string> ListNameBot{ get; set; }
     }
 }

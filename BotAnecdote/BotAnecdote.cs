@@ -1,26 +1,13 @@
-﻿using ChatWithBotWeb.Models.Interface;
+﻿using Coman.InterfaceBots;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ChatWithBotWeb.Models.Bots
+namespace BotAnecdote
 {
-    public class BotAnecdote: IBot
+    public class BotAnecdote: IMessageBot
     {
-        public string NameBot
-        {
-            get
-            {
-                return "BotAnecdote";
-            }
-            set
-            {
-
-            }
-
-        }
+        public string NameBot => nameof(BotAnecdote);//Аналогично string NameBot="BotAnecdote"
 
         private readonly Dictionary<string, string> ListAnecdot = new Dictionary<string, string>() {
             {"ГРУСТНО","Объявление: Продам квартиру в Москве или меняю на посёлок городского типа в Курганской области."},
@@ -28,16 +15,16 @@ namespace ChatWithBotWeb.Models.Bots
             {"ХОЧУ АНЕКДОТ","— Пaп, у мeня кoлeсo спустилo... \n— A чё ты мнe звoнишь, дoчь, у тeбя ж муж eсть, вoт eму и звoни! \n— Дa, блин, звoнилa, oн нe oтвeчaeт...\n  — Ну a зaпaснoгo нeт? \n — Звoнилa, oн тoжe нe oтвeчaeт... ." },
             {"ЛУЧШИЙ", "Сел медведь в тачку с заряженым автозвуком и сгорел " }
         };
-        public string Move(object command)
+        public string Move(string command)
         {
-          
-            if (ListAnecdot.ContainsKey((string)command))
+            command = command.ToUpper();
+            if (ListAnecdot.ContainsKey(command))
             {
-                return ListAnecdot[(string)command];
+                return ListAnecdot[command];
             }
             else
             {
-                return String.Empty;
+                return string.Empty;
             }
         }
         public StringBuilder GetAllCommand()

@@ -11,16 +11,16 @@ namespace ChatWithBotWeb.Controllers
 {
     public class RolesController : Controller
     {
-        RoleManager<IdentityRole> RoleManager;
-        UserManager<User> UserManager;
+        RoleManager<IdentityRole> roleManager;
+        UserManager<User> userManager;
         public RolesController(RoleManager<IdentityRole> roleManager , UserManager<User> userManager)
         {
-            RoleManager = roleManager;
-            UserManager = userManager;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
         }
         public IActionResult Index()
         {
-            return View(RoleManager.Roles.ToList());
+            return View(roleManager.Roles.ToList());
         }
         public IActionResult Create() => View();
         
@@ -29,7 +29,7 @@ namespace ChatWithBotWeb.Controllers
         {
             if (!String.IsNullOrEmpty(name))
             {
-                IdentityResult result = await RoleManager.CreateAsync(new IdentityRole(name));
+                IdentityResult result = await roleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index");
@@ -47,24 +47,24 @@ namespace ChatWithBotWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            IdentityRole role = await RoleManager.FindByIdAsync(id);
+            IdentityRole role = await roleManager.FindByIdAsync(id);
             if (role != null)
             {
-                IdentityResult result = await RoleManager.DeleteAsync(role);
+                IdentityResult result = await roleManager.DeleteAsync(role);
             }
             return RedirectToAction("Index");
         }
-        public IActionResult UserList() => View(UserManager.Users.ToList());
+        public IActionResult UserList() => View(userManager.Users.ToList());
 
         public async Task<IActionResult> Edit(string userId)
         {
             // получаем пользователя
-            User user = await UserManager.FindByIdAsync(userId);
+            User user = await userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await UserManager.GetRolesAsync(user);
-                var allRoles = RoleManager.Roles.ToList();
+                var userRoles = await userManager.GetRolesAsync(user);
+                var allRoles = roleManager.Roles.ToList();
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -81,19 +81,19 @@ namespace ChatWithBotWeb.Controllers
         public async Task<IActionResult> Edit(string userId, List<string> roles)
         {
             // получаем пользователя
-            User user = await UserManager.FindByIdAsync(userId);
+            User user = await userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await UserManager.GetRolesAsync(user);               
+                var userRoles = await userManager.GetRolesAsync(user);               
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены
                 var removedRoles = userRoles.Except(roles);
 
-                await UserManager.AddToRolesAsync(user, addedRoles);
+                await userManager.AddToRolesAsync(user, addedRoles);
 
-                await UserManager.RemoveFromRolesAsync(user, removedRoles);
+                await userManager.RemoveFromRolesAsync(user, removedRoles);
 
                 return RedirectToAction("UserList");
             }

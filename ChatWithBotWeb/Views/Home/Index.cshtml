@@ -2,20 +2,20 @@
 <div class="text-center mt-3">
     @if (Model.Any())
     {  
-        @foreach (var c in Model)
+        @foreach (var chat in Model)
         {
             <div class="list-group card__Chat">
-                <form id="@c.Id" asp-action="Index" asp-controller="Chat" method="post">
+                <form id="@chat.Id" asp-action="Index" asp-controller="Chat" method="post">
                     
-                    <input type="hidden" asp-for="@c.Id" name="IdChat" />
+                    <input type="hidden" asp-for="@chat.Id" name="IdChat" />
                     <button class="list-group-item list-group-item-action flex-column align-items-start" type="submit">
 
                         <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">@c.NameChat</h5>
+                            <h5 class="mb-1">@chat.NameChat</h5>
                         </div>
                         <p class="mb-1">
                             Пользователи чата:
-                            @foreach (var u in c.Users)
+                            @foreach (var u in chat.Users)
                             {
                                 @(u.Name+" ");
                             }
@@ -24,9 +24,9 @@
                         </p>
                         <p class="mb-1" style="text-align: initial;">
                             Боты:
-                            @foreach (var b in c.Bots)
+                            @foreach (var name in chat.NameBots )
                             {
-                                @(b.NameBot+" ")
+                                @(name+" ")
                             }
 
                         </p>
@@ -35,8 +35,8 @@
              </div>
              if (User.IsInRole("Manager"))
              {
-                 <form id="@c.Id" class=" del__chat" asp-action="DeleteChat" asp-controller="Home" method="post">
-                            <input type="hidden" asp-for="@c.Id" name="IdChat" />
+                 <form id="@chat.Id" class=" del__chat" asp-action="DeleteChat" asp-controller="Home" method="post">
+                            <input type="hidden" asp-for="@chat.Id" name="IdChat" />
                             <button class="btn btn-outline-danger" >Удалить чат</button>
                  </form>    
              }

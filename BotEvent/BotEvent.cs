@@ -1,34 +1,16 @@
-﻿using ChatWithBotWeb.Infrastructure;
-using ChatWithBotWeb.Models.Interface;
-using ChatWithBotWeb.Services;
+﻿using Coman;
+using Coman.InterfaceBots;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ChatWithBotWeb.Models.Bots
+namespace BotEvent
 {
-    public class BotEvent : IBot
+    public class BotEvent : IEventBot
     {
-        public string NameBot
-        {
-            get
-            {
-                return "BotEvent";
-            }
-            set
-            {
+        public string NameBot => nameof(BotEvent);
+       
 
-            }
-
-        }
-        public  StringBuilder GetAllCommand()
-        {
-            throw new NotImplementedException();
-        }
-
-        public  string Move(object command)
+        public string Move(EventChat command)
         {
             string result = "";
             switch (command)
@@ -46,6 +28,5 @@ namespace ChatWithBotWeb.Models.Bots
             return result;
         }
 
-        
     }
 }

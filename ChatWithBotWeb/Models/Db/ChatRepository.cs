@@ -19,26 +19,7 @@ namespace ChatWithBotWeb.Models.Db
             get
             {
                 var ListChat= Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).Include(c => c.ChatLogUsers).Include(c => c.LogActions).ToList();
-                foreach(var chat in ListChat)
-                {
-                    if (chat.NameBots!=null)
-                    {
-                        foreach(var name in chat.NameBots)
-                        {
-                            try
-                            {
-                                Type type = Type.GetType("ChatWithBotWeb.Models.Bots." + name);
-                                IBot bot = (IBot)Activator.CreateInstance(type);
-                                chat.ChatBot.Add(bot);
-                            }
-                            catch
-                            {
-                             
-                            }
-                            
-                        }
-                    }
-                }
+                
                 return ListChat;
             }
         }
@@ -59,24 +40,7 @@ namespace ChatWithBotWeb.Models.Db
         {
           Chat chat=  Context.Chats.Include(c => c.Users).Include(c => c.ListMessage).Include(c=>c.LogActions)
                                                                                      .Include(c => c.ChatLogUsers)
-                                                                                     .FirstOrDefault(c => c.ChatId == indexChat);
-                if (chat.NameBots != null)
-                {
-                    foreach (var name in chat.NameBots)
-                    {
-                    try
-                    {   /*Подумать как сделать джинерик по умному */
-                        Type type = Type.GetType("ChatWithBotWeb.Models.Bots." + name);
-                        IBot bot = (IBot)Activator.CreateInstance(type);
-                        chat.ChatBot.Add(bot);
-                    }
-                    catch
-                    {
-
-                    }
-                }
-                }
-            
+                                                                                     .FirstOrDefault(c => c.ChatId == indexChat);                
             return chat;
         }
         public Chat DeleteUserChat(Chat chat, User user)
@@ -101,6 +65,10 @@ namespace ChatWithBotWeb.Models.Db
         public void UpdateChat(Chat chat)
         {
             Context.SaveChanges();
+        }
+        public async Task UpdateChatAsync(Chat chat)
+        {
+            await Context.SaveChangesAsync();
         }
     }
 }

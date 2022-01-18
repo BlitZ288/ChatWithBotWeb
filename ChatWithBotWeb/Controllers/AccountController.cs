@@ -17,11 +17,12 @@ namespace ChatWithBotWeb.Controllers
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
         private IRepositoryUser repositoryUser;
-        public AccountController(UserManager<User> userMgr, SignInManager<User> signMgr, IRepositoryUser Usercontext)
+        public AccountController(UserManager<User> userMgr, SignInManager<User> signMgr, IRepositoryUser Usercontext, RoleManager<IdentityRole> roleManager)
         {
             userManager = userMgr;
             signInManager = signMgr;
             repositoryUser = Usercontext;
+            IdentityniItializer.EnsurePopularity(userMgr, roleManager, Usercontext).Wait();
         }
         [AllowAnonymous]
         public ViewResult Login(string returnUrl = null)

@@ -14,6 +14,7 @@ namespace ChatWithBotWeb.Models.Interface
         Chat DeleteUserChat (Chat chat, User user);
         Chat  AddUserChat(Chat chat, User user);
         void UpdateChat (Chat chat);
+        Task UpdateChatAsync(Chat chat);
 
     }
 }

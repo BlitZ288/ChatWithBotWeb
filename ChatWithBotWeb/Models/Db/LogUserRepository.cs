@@ -33,7 +33,7 @@ namespace ChatWithBotWeb.Models.Db
 
         public LogsUser GetLog(User user, Chat chat)
         {
-            return Context.LogsUsers.FirstOrDefault(l => l.User == user && l.Chat == chat);
+            return Context.LogsUsers.FirstOrDefault(l => l.User.Id == user.Id && l.Chat == chat);
         }
     }
 }

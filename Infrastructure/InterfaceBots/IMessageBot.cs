@@ -4,20 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatWithBotWeb.Models.Interface
+namespace Coman.InterfaceBots
 {
-    public interface IBot
+    public interface IMessageBot
     {
-       
-        public string NameBot { get; set; }
+        public string NameBot { get; }
         /// <summary>
         /// Действие бота
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public  string Move(object command);
-      
+        public string Move(string command);
+
         public StringBuilder GetAllCommand();
-       
+
     }
 }

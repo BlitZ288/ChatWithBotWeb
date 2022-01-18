@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using ChatWithBotWeb.Services;
 
 namespace ChatWithBotWeb
 {
@@ -28,8 +27,8 @@ namespace ChatWithBotWeb
                     webBuilder.UseDefaultServiceProvider(options => options.ValidateScopes = false);
                 }).ConfigureServices(services =>
                 {
-                    services.AddHostedService<BotServices>();
-                  ;
+                                        
+                  
                 });
     }
 }

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\img\" />
+    <ProjectReference Include="..\BotService\BotService.csproj" />
   </ItemGroup>
 
 </Project>

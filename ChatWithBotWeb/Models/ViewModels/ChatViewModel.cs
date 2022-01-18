@@ -11,6 +11,6 @@ namespace ChatWithBotWeb.Models
         public int Id { get; set; }
         public string NameChat { get; set; }
         public List<User> Users { get; set; }
-        public List<IBot> Bots { get; set; }
+        public IEnumerable<string> NameBots { get; set; }
     }
 }
