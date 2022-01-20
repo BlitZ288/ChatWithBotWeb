@@ -8,4 +8,13 @@
     <ProjectReference Include="..\Infrastructure\Coman.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AssemblyBots\BotAnecdote.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AssemblyBots\BotEvent.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

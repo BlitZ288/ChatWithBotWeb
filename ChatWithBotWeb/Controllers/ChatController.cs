@@ -20,8 +20,8 @@ namespace ChatWithBotWeb.Controllers
         private IRepositoryUser repositoryUser;
         private IRepositoryChat repositoryChat;
         private IRepositoryLogUser repositoryLogUser;
-        private readonly ManagerBots managerBots;
-        public ChatController(IRepositoryUser usercontext, IRepositoryChat chatcontext, IRepositoryLogUser logUsercontext,/* IRepositoryBot botcontext*/ ManagerBots managerBots)
+        private readonly BotsManager managerBots;
+        public ChatController(IRepositoryUser usercontext, IRepositoryChat chatcontext, IRepositoryLogUser logUsercontext,/* IRepositoryBot botcontext*/ BotsManager managerBots)
         {
             this.repositoryUser = usercontext;
             this.repositoryChat = chatcontext;
@@ -138,7 +138,7 @@ namespace ChatWithBotWeb.Controllers
             }
             chat.Users.Add(user);
             LogAction logAction = new LogAction(DateTime.Now, EventChat.JoinChat, currentUser);
-
+            BotEventMoveAsync(logAction.Content, chat);
             chat.LogActions.Add(logAction);
             repositoryChat.UpdateChat(chat);
             return RedirectToAction("Index", new { idChat = chatId });
@@ -224,9 +224,9 @@ namespace ChatWithBotWeb.Controllers
             return result;
         }
 
-        private async Task BotMessageMoveAsync(string content, Chat chat)
+        private void BotMessageMoveAsync(string content, Chat chat)
         {         
-            var botAnswer = await Task.Run(()=> managerBots.GetMessage(content, chat.NameBots));
+            var botAnswer =  managerBots.GetMessage(content, chat.NameBots);
             if (botAnswer != null)
             {
                 Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
@@ -236,9 +236,9 @@ namespace ChatWithBotWeb.Controllers
                 repositoryChat.UpdateChat(chat);
             }
         }
-        private async Task BotEventMoveAsync(EventChat eventChat, Chat chat)
+        private void BotEventMoveAsync(EventChat eventChat, Chat chat)
         {
-            var botAnswer = await Task.Run(() => managerBots.GetEventMessage(eventChat, chat.NameBots));
+            var botAnswer =  managerBots.GetEventMessage(eventChat, chat.NameBots);
             if (botAnswer != null)
             {
                 Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
