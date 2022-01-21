@@ -96,12 +96,12 @@
                         </div>
                     }
                 </div>
-                <form asp-action="AddMessage" asp-controller="Chat" method="post">
+                <form asp-action="AddMessageInChat" asp-controller="Chat" method="post">
                     <input type="text" name="content" placeholder="Введите сообщение" class="input-group-text w-100" />
                     <input type="hidden" name="chatId" value="@Model.Chat.ChatId" />
                     <button type="submit" class="btn btn-primary  mt-4">Отправить</button>
                 </form>
-                <form asp-action="AddBot" asp-controller="Chat">
+                <form asp-action="AddBotInChat" asp-controller="Chat">
                     <input type="hidden" name="chatId" value="@Model.Chat.ChatId" />
                     <select class="form-control mt-3" id="NameBot" name="NameBot">
 

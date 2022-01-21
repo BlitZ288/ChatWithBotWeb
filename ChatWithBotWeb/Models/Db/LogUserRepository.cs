@@ -1,39 +1,37 @@
 ﻿using ChatWithBotWeb.Models.Interface;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models.Db
 {
-    class LogUserRepository: IRepositoryLogUser
+    class LogUserRepository : IRepositoryLogUser
     {
-        private ApplicationDbContext Context;
+        private ApplicationDbContext context;
         public LogUserRepository(ApplicationDbContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         public void AddLog(LogsUser logsUser)
         {
-            Context.LogsUsers.Add(logsUser);
-            Context.SaveChanges();    
+            context.LogsUsers.Add(logsUser);
+            context.SaveChanges();
         }
 
         public void DeleteLog(LogsUser logsUser)
         {
-            Context.LogsUsers.Remove(logsUser);
-            Context.SaveChanges();
+            context.LogsUsers.Remove(logsUser);
+            context.SaveChanges();
         }
 
         public List<LogsUser> GetAll()
         {
-            return Context.LogsUsers.ToList();
+            return context.LogsUsers.ToList();
         }
 
         public LogsUser GetLog(User user, Chat chat)
         {
-            return Context.LogsUsers.FirstOrDefault(l => l.User.Id == user.Id && l.Chat == chat);
+            return context.LogsUsers.FirstOrDefault(l => l.User.Id == user.Id && l.Chat == chat);
         }
     }
 }

@@ -1,17 +1,12 @@
 ﻿using Coman.Extensions;
 using Coman.InterfaceBots;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BotService
 {
-     
     public class BotsRepository : IBotsRepository
     {
         public IEnumerable<IBot> GetAllBots()
@@ -23,24 +18,22 @@ namespace BotService
             foreach (var fileName in fileNames)
             {
                 var types = Assembly.LoadFile(fileName).GetTypes();
-                foreach(var type in types)
+                foreach (var type in types)
                 {
                     if (type.IsInterfaceImplemented(nameof(IEventBot)))
                     {
                         bots.Add((IEventBot)Activator.CreateInstance(type));
-                        continue;                        
+                        continue;
                     }
 
                     if (type.IsInterfaceImplemented(nameof(IMessageBot)))
                     {
                         bots.Add((IMessageBot)Activator.CreateInstance(type));
-                    }                   
+                    }
                 }
             }
             return bots;
-          
         }
-       
 
         private string GetExecutionAssemblyFolder()
         {
@@ -53,7 +46,7 @@ namespace BotService
         /// <param name="directory">Целевая папка</param>
         /// <returns></returns>
         private IEnumerable<string> GetAllAssemblyFilesNameFrom(string directory)
-        {           
+        {
             return Directory.GetFiles(Path.Combine(GetExecutionAssemblyFolder(), directory), "*.dll");
         }
     }

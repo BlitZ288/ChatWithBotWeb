@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChatWithBotWeb.Models.Interface
 {
-   public interface IRepositoryMessage
+    public interface IRepositoryMessage
     {
         List<Message> GetMessages { get; }
         List<Message> UnreadMessages();

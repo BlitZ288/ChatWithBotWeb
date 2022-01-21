@@ -1,14 +1,11 @@
 ﻿using Coman;
 using Coman.InterfaceBots;
-using System;
-using System.Text;
 
 namespace BotEvent
 {
     public class BotEvent : IEventBot
     {
         public string NameBot => nameof(BotEvent);
-       
 
         public string Move(EventChat command)
         {
@@ -27,6 +24,5 @@ namespace BotEvent
             }
             return result;
         }
-
     }
 }

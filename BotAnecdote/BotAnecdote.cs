@@ -1,13 +1,12 @@
 ﻿using Coman.InterfaceBots;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace BotAnecdote
 {
-    public class BotAnecdote: IMessageBot
+    public class BotAnecdote : IMessageBot
     {
-        public string NameBot => nameof(BotAnecdote);//Аналогично string NameBot="BotAnecdote"
+        public string NameBot => nameof(BotAnecdote);
 
         private readonly Dictionary<string, string> ListAnecdot = new Dictionary<string, string>() {
             {"ГРУСТНО","Объявление: Продам квартиру в Москве или меняю на посёлок городского типа в Курганской области."},

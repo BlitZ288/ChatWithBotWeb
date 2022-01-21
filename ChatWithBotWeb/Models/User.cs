@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models
 {
-    public class User:IdentityUser
+    public class User : IdentityUser
     {
         public string Name { get; set; }
         public string Password { get; set; }
@@ -14,9 +12,9 @@ namespace ChatWithBotWeb.Models
         public List<Chat> Chats { get; set; } = new List<Chat>();
         public User(string name)
         {
-           Name = name;
+            Name = name;
         }
-        public User(string name,string password)
+        public User(string name, string password)
         {
             Name = name;
             Password = password;

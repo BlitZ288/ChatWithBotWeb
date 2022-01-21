@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChatWithBotWeb.Models.ViewModels
 {
@@ -10,7 +7,7 @@ namespace ChatWithBotWeb.Models.ViewModels
         public Chat Chat { get; set; }
         public User CurrentUser { get; set; }
         public List<User> UsersNotInclude { get; set; }
-        public List<Message> HistoryChat{ get; set; }
-        public List<string> ListNameBot{ get; set; }
+        public List<Message> HistoryChat { get; set; }
+        public List<string> ListNameBot { get; set; }
     }
 }

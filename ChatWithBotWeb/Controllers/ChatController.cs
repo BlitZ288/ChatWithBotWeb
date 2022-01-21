@@ -5,11 +5,11 @@ using ChatWithBotWeb.Models.ViewModels;
 using Coman;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Controllers
@@ -21,12 +21,15 @@ namespace ChatWithBotWeb.Controllers
         private IRepositoryChat repositoryChat;
         private IRepositoryLogUser repositoryLogUser;
         private readonly BotsManager managerBots;
-        public ChatController(IRepositoryUser usercontext, IRepositoryChat chatcontext, IRepositoryLogUser logUsercontext,/* IRepositoryBot botcontext*/ BotsManager managerBots)
+        private IServiceScopeFactory _serviceScopeFactory;
+
+        public ChatController(IRepositoryUser usercontext, IRepositoryChat chatcontext, IRepositoryLogUser logUsercontext, IServiceScopeFactory serviceScopeFactory, BotsManager managerBots)
         {
             this.repositoryUser = usercontext;
             this.repositoryChat = chatcontext;
             this.repositoryLogUser = logUsercontext;
             this.managerBots = managerBots;
+            this._serviceScopeFactory = serviceScopeFactory;
         }
         [Authorize]
         public ActionResult Index(int idChat)
@@ -44,7 +47,7 @@ namespace ChatWithBotWeb.Controllers
                 chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
             }
-            var listUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList(); 
+            var listUsers = repositoryUser.GetAllUsers.Except(chat.Users).ToList();
 
             List<string> listBotNames;
             if (chat.NameBots.Any())
@@ -68,11 +71,11 @@ namespace ChatWithBotWeb.Controllers
             {
                 HttpContext.Response.Headers.Add("refresh", "15; url=" + Url.Action("Index", new { idChat = idChat }));
             }
-
             return View(model);
         }
+
         [HttpPost]
-        public  ActionResult AddMessage(string content,int chatId)
+        public ActionResult AddMessageInChat(string content, int chatId)
         {
             if (!String.IsNullOrEmpty(content))
             {
@@ -83,10 +86,13 @@ namespace ChatWithBotWeb.Controllers
                 chat.ListMessage.Add(message);
 
                 LogAction logAction = new LogAction(DateTime.Now, EventChat.SendMessage, user);
-                chat.LogActions.Add(logAction);              
+                chat.LogActions.Add(logAction);
+
                 repositoryChat.UpdateChat(chat);
 
-                Task.Run(()=> BotMessageMoveAsync(content,chat));
+                Task.Run(() => BotMessageMove(content, chatId, chat.NameBots));
+
+
                 TempData["refresh"] = true;
             }
             else
@@ -94,14 +100,14 @@ namespace ChatWithBotWeb.Controllers
                 TempData["Errors"] = "Нельзя отправить пустое сообщение";
             }
             return RedirectToAction("Index", new { idChat = chatId });
-
         }
+
         [HttpPost]
         public ActionResult DeleteMessage(int messageId, int chatId)
         {
             Chat chat = repositoryChat.GetChat(chatId);
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            Message message=chat.ListMessage.Find(m=>m.MessageId==messageId);
+            Message message = chat.ListMessage.Find(m => m.MessageId == messageId);
 
             if (message.User != null && message.User.Equals(user))
             {
@@ -119,36 +125,42 @@ namespace ChatWithBotWeb.Controllers
                 return RedirectToAction("Index", new { idChat = chatId });
             }
         }
+
         [HttpPost]
-        public ActionResult AddUserInChat(string userId , int chatId)
+        public ActionResult AddUserInChat(string userId, int chatId)
         {
             User user = repositoryUser.GetUser(userId);
             var currentUser = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             Chat chat = repositoryChat.GetChat(chatId);
-            LogsUser logsUser = repositoryLogUser.GetLog(user,chat);
-            if (logsUser==null)
+            LogsUser logsUser = repositoryLogUser.GetLog(user, chat);
+            if (logsUser == null)
             {
                 LogsUser logs = new LogsUser() { StartChat = DateTime.Now, StopChat = null, User = user };
                 chat.ChatLogUsers.Add(logs);
             }
             else
-            {       
+            {
                 logsUser.StopChat = null;
             }
             chat.Users.Add(user);
+
             LogAction logAction = new LogAction(DateTime.Now, EventChat.JoinChat, currentUser);
-            BotEventMoveAsync(logAction.Content, chat);
             chat.LogActions.Add(logAction);
+
             repositoryChat.UpdateChat(chat);
+
+            Task.Run(() => BotEventMove(logAction.Content, chatId, chat.NameBots));
+
             return RedirectToAction("Index", new { idChat = chatId });
-            
         }
+
         [HttpPost]
-        public ActionResult AddBot(int chatId, string nameBot)
+        public ActionResult AddBotInChat(int chatId, string nameBot)
         {
-            Chat chat = repositoryChat.GetChat(chatId);           
+            Chat chat = repositoryChat.GetChat(chatId);
             var user = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             if (ModelState.IsValid)
             {
                 chat.NameBots.Add(nameBot);
@@ -156,9 +168,7 @@ namespace ChatWithBotWeb.Controllers
                 chat.LogActions.Add(logAction);
                 repositoryChat.UpdateChat(chat);
             }
-
             return RedirectToAction("Index", new { idChat = chatId });
-
         }
         [HttpPost]
         public ActionResult DeleteBot(int chatId, string nameBot)
@@ -181,6 +191,7 @@ namespace ChatWithBotWeb.Controllers
             var currentUser = repositoryUser.GetUser(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             chat.Users.Remove(user);
+
             LogsUser logsUser = repositoryLogUser.GetLog(user, chat);
             logsUser.StopChat = DateTime.Now;
             LogAction logAction = new LogAction(DateTime.Now, EventChat.DeletePerson, currentUser);
@@ -196,7 +207,7 @@ namespace ChatWithBotWeb.Controllers
                 repositoryChat.UpdateChat(chat);
                 return RedirectToAction("Index", new { idChat = chatId });
             }
-            
+
         }
         private List<Message> GetHistoryChat(Chat chat, User user)
         {
@@ -224,27 +235,46 @@ namespace ChatWithBotWeb.Controllers
             return result;
         }
 
-        private void BotMessageMoveAsync(string content, Chat chat)
-        {         
-            var botAnswer =  managerBots.GetMessage(content, chat.NameBots);
-            if (botAnswer != null)
-            {
-                Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
-                botMessage.Chat = chat;
-                chat.ListMessage.Add(botMessage);
-
-                repositoryChat.UpdateChat(chat);
-            }
-        }
-        private void BotEventMoveAsync(EventChat eventChat, Chat chat)
+        private void BotMessageMove(string content, int chatId, IEnumerable<string> nameBots)
         {
-            var botAnswer =  managerBots.GetEventMessage(eventChat, chat.NameBots);
-            if (botAnswer != null)
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
-                botMessage.Chat = chat;
-                chat.ListMessage.Add(botMessage);
-                repositoryChat.UpdateChat(chat);
+                var repository = scope.ServiceProvider.GetRequiredService<IRepositoryChat>();
+
+                var botAnswer = managerBots.GetMessage(content, nameBots);
+
+                var chat = repository.GetChat(chatId);
+
+                if (botAnswer != null)
+                {
+                    Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
+                    botMessage.Chat = chat;
+                    chat.ListMessage.Add(botMessage);
+
+                    repository.UpdateChat(chat);
+                }
+            }
+
+        }
+        private void BotEventMove(EventChat eventChat, int chatId, IEnumerable<string> nameBots)
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var repository = scope.ServiceProvider.GetRequiredService<IRepositoryChat>();
+
+                var botAnswer = managerBots.GetEventMessage(eventChat, nameBots);
+
+                var chat = repository.GetChat(chatId);
+
+                if (botAnswer != null)
+                {
+
+                    Message botMessage = new Message(botAnswer.Content, botAnswer.OwnerAnswer);
+                    botMessage.Chat = chat;
+                    chat.ListMessage.Add(botMessage);
+
+                    repository.UpdateChat(chat);
+                }
             }
         }
     }

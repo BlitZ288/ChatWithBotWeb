@@ -1,13 +1,6 @@
-﻿using ChatWithBotWeb.Models;
-using ChatWithBotWeb.Models.Interface;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Models
 {
@@ -18,7 +11,7 @@ namespace ChatWithBotWeb.Models
         public string Name { get; set; }
 
         public List<User> Users { get; set; } = new List<User>();
-      
+
         public List<Message> ListMessage { get; set; } = new List<Message>();
 
         public List<LogAction> LogActions { get; set; } = new List<LogAction>();

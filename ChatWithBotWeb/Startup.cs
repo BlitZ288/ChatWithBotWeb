@@ -2,17 +2,13 @@ using BotService;
 using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Db;
 using ChatWithBotWeb.Models.Interface;
-using Coman.InterfaceBots;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 
 namespace ChatWithBotWeb
 {
@@ -31,10 +27,12 @@ namespace ChatWithBotWeb
             services.AddDbContext<ApplicationDbContext>(option => option.UseNpgsql(
                      Configuration["Data:ChatBotWeb:ConnectionString"]
                 ));
+
             services.AddDbContext<AppIdentityDbContex>(option => option.UseNpgsql(
                     Configuration["Data:ChatBotWebIdentity:ConnectionString"]
                ));
-            services.AddIdentity<User, IdentityRole>(opts=> {
+            services.AddIdentity<User, IdentityRole>(opts =>
+            {
                 opts.Password.RequiredLength = 4;
                 opts.Password.RequireLowercase = false;
                 opts.Password.RequireUppercase = false;
@@ -43,15 +41,15 @@ namespace ChatWithBotWeb
             })
                 .AddEntityFrameworkStores<AppIdentityDbContex>()
                 .AddDefaultTokenProviders();
-            services.AddTransient<IRepositoryUser, RepositoryUser >();
-            services.AddTransient<IRepositoryChat, ChatRepository >();
-            services.AddTransient<IRepositoryLogUser, LogUserRepository >();
+            services.AddTransient<IRepositoryUser, RepositoryUser>();
+            services.AddTransient<IRepositoryChat, ChatRepository>();
+            services.AddTransient<IRepositoryLogUser, LogUserRepository>();
             services.AddTransient<IRepositoryMessage, MessageRepository>();
-            services.AddTransient<IRepositoryLogAction,LogActionRepository>();
-            services.AddSingleton<BotsManager>();
+            services.AddTransient<IRepositoryLogAction, LogActionRepository>();
+            services.AddTransient<BotsManager>();
             services.AddMemoryCache();
             services.AddSession();
-            
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -61,7 +59,7 @@ namespace ChatWithBotWeb
                 app.UseDeveloperExceptionPage();
             }
             else
-            {  
+            {
 
                 app.UseHsts();
             }
