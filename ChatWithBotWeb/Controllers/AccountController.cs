@@ -1,12 +1,9 @@
-﻿using ChatWithBotWeb.Models;
-using ChatWithBotWeb.Models.Interface;
-using ChatWithBotWeb.Models.ViewModels;
+﻿using ChatWithBotWeb.Models.ViewModels;
+using ChatWithBotWeb.Service.UserService.Interface;
+using Domian.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ChatWithBotWeb.Controllers
@@ -16,13 +13,13 @@ namespace ChatWithBotWeb.Controllers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
-        private IRepositoryUser repositoryUser;
-        public AccountController(UserManager<User> userMgr, SignInManager<User> signMgr, IRepositoryUser Usercontext, RoleManager<IdentityRole> roleManager)
+        private IUserService userService;
+        public AccountController(UserManager<User> userMgr, SignInManager<User> signMgr, IUserService userService, RoleManager<IdentityRole> roleManager)
         {
             userManager = userMgr;
             signInManager = signMgr;
-            repositoryUser = Usercontext;
-            IdentityniItializer.EnsurePopularity(userMgr, roleManager, Usercontext).Wait();
+            this.userService = userService;
+            //IdentityniItializer.EnsurePopularity(userMgr, roleManager, Usercontext).Wait();
         }
         [AllowAnonymous]
         public ViewResult Login(string returnUrl = null)
@@ -74,13 +71,13 @@ namespace ChatWithBotWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User(loginModel.Name, loginModel.Password);
+                User user = new User(loginModel.Name);
                 user.UserName = loginModel.Name;
                 var result = await userManager.CreateAsync(user, loginModel.Password);
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, false);
-                    repositoryUser.AddUser(user);
+                    //repositoryUser.AddUser(user);
                     return RedirectToAction("Index", "Home");
                 }
                 else

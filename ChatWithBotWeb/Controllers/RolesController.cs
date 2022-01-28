@@ -1,5 +1,5 @@
-﻿using ChatWithBotWeb.Models;
-using ChatWithBotWeb.Models.ViewModels;
+﻿using ChatWithBotWeb.Models.ViewModels;
+using Domian.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,7 +13,7 @@ namespace ChatWithBotWeb.Controllers
     {
         RoleManager<IdentityRole> roleManager;
         UserManager<User> userManager;
-        public RolesController(RoleManager<IdentityRole> roleManager , UserManager<User> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
@@ -23,7 +23,7 @@ namespace ChatWithBotWeb.Controllers
             return View(roleManager.Roles.ToList());
         }
         public IActionResult Create() => View();
-        
+
         [HttpPost]
         public async Task<IActionResult> Create(string name)
         {
@@ -50,7 +50,7 @@ namespace ChatWithBotWeb.Controllers
             IdentityRole role = await roleManager.FindByIdAsync(id);
             if (role != null)
             {
-                IdentityResult result = await roleManager.DeleteAsync(role);
+                await roleManager.DeleteAsync(role);
             }
             return RedirectToAction("Index");
         }
@@ -85,7 +85,7 @@ namespace ChatWithBotWeb.Controllers
             if (user != null)
             {
                 // получем список ролей пользователя
-                var userRoles = await userManager.GetRolesAsync(user);               
+                var userRoles = await userManager.GetRolesAsync(user);
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены

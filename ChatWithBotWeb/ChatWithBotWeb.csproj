@@ -31,6 +31,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BotService\BotService.csproj" />
+    <ProjectReference Include="..\Domian\Domian.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Interface\" />
   </ItemGroup>
 
 </Project>

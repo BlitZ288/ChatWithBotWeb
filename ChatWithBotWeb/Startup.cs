@@ -1,7 +1,15 @@
 using BotService;
-using ChatWithBotWeb.Models;
 using ChatWithBotWeb.Models.Db;
-using ChatWithBotWeb.Models.Interface;
+using ChatWithBotWeb.Service.ChatService;
+using ChatWithBotWeb.Service.ChatService.Interface;
+using ChatWithBotWeb.Service.MessageService;
+using ChatWithBotWeb.Service.MessageService.Interface;
+using ChatWithBotWeb.Service.UserService;
+using ChatWithBotWeb.Service.UserService.Interface;
+using Domian;
+using Domian.Context;
+using Domian.Entities;
+using Domian.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -41,11 +49,18 @@ namespace ChatWithBotWeb
             })
                 .AddEntityFrameworkStores<AppIdentityDbContex>()
                 .AddDefaultTokenProviders();
-            services.AddTransient<IRepositoryUser, RepositoryUser>();
-            services.AddTransient<IRepositoryChat, ChatRepository>();
-            services.AddTransient<IRepositoryLogUser, LogUserRepository>();
-            services.AddTransient<IRepositoryMessage, MessageRepository>();
-            services.AddTransient<IRepositoryLogAction, LogActionRepository>();
+
+            //services.AddTransient<IRepositoryUser, RepositoryUser>();
+            ////services.AddTransient<IRepositoryChat, ChatRepository>();
+            //services.AddTransient<IRepositoryLogUser, LogUserRepository>();
+            //services.AddTransient<IRepositoryMessage, MessageRepository>();
+            //services.AddTransient<IRepositoryLogAction, LogActionRepository>();
+
+            services.AddTransient<IChatService, ChatServise>();
+            services.AddTransient<IMessageService, MessageService>();
+            services.AddTransient<IUserService, UserSercvice>();
+            services.AddTransient<IUnitOfWorck, EFUnitOfWork>();
+
             services.AddTransient<BotsManager>();
             services.AddMemoryCache();
             services.AddSession();

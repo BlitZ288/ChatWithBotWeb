@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Coman.csproj" />
+    <ProjectReference Include="..\Infrastructure\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

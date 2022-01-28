@@ -1,4 +1,5 @@
-﻿using Coman;
+﻿
+using Coman;
 using Coman.Extensions;
 using Coman.InterfaceBots;
 using System;
@@ -14,7 +15,7 @@ namespace BotService
         private IEnumerable<IEventBot> eventBots;
         private IEnumerable<string> listNameBots;
         private bool isRunning;
-        private IBotsRepository botsRepository;
+        private readonly IBotsRepository botsRepository;
         public BotsManager(IBotsRepository botsRepository = null)
         {
             this.botsRepository = botsRepository ?? new BotsRepository();
